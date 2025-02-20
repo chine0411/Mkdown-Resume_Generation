@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="模板1.css">
+  <title>简历示例</title>
+</head>
+
+<body>
+  <div class="resume-container">
+    <div class="left-section">
+      <div class="profile-pic">
+        <img src="1.jpg" alt="找不到图片">
+      </div>
+      <h2 class="name">{{ name }}</h2>
+      <p class="job-title">{{job_intention}}</p>
+      <div class="personal_info">
+        <h3>基本信息</h3>
+        <p>年龄：{{personal_info.age}}</p>
+        <p>性别：{{ personal_info.gender }}</p>
+        <p>民族：{{ personal_info.ethnicity }}</p>
+        <p>地址：北京市朝阳区</p>
+        <p>电话：{{personal_info.contact}}</p>
+      </div>
+      <div class="education">
+        <h3>教育背景</h3>
+        {% for education in education %}
+            <P>{{ education.school }} —— {{ education.major }} ({{ education.degree }}) {{ education.dates }}</P>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="right-section">
+      <div class="skills">
+        <h3>职业技能</h3>
+        {% for skill in skills %}
+        <li>{{ skill }}</li>
+        {% endfor %}
+      </div>
+      <div class="certificates">
+        <h3>证书</h3>
+        {% for certificates in certificates %}
+        <li>{{ certificates}}</li>
+        {% endfor %}
+      </div>
+      <div class="work_experience">
+        <h3>工作经历</h3>
+        <ol>
+          {% for experience in work_experience %}
+          <h4>{{ experience.position }} @ {{ experience.company }} ({{ experience.dates }})</h4>
+          <ol>
+            {% for detail in experience.details %}
+            <li>{{ detail }}</li>
+            {% endfor %}
+          </ol>
+          {% endfor %}
+        </ol>
+        
+      </div>
+      <div class="self_evaluation">
+        <h3>自我评价</h3>
+        <p>{{self_evaluation}}</p>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
