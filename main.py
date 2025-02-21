@@ -176,6 +176,7 @@ def main():
     root = tk.Tk()
     app = ResumeBuilderGUI(root)
     root.mainloop()
+    root.quit()
 
 
 if __name__ == "__main__":
