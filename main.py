@@ -1,11 +1,13 @@
 import json
-import os
 import logging
+import os
 import tkinter as tk
-from tkinter import filedialog, messagebox
-from jinja2 import Environment, FileSystemLoader
-from mk_p import parse_markdown_to_json
 from threading import Thread
+from tkinter import filedialog
+
+from jinja2 import Environment, FileSystemLoader
+
+from mk_p import parse_markdown_to_json
 
 # 配置日志
 logging.basicConfig(
@@ -34,6 +36,7 @@ class ResumeBuilderGUI:
         self.input_frame.pack(fill=tk.X)
 
         tk.Label(self.input_frame, text="输入文件:").pack(side=tk.LEFT)
+
         # 使用StringVar来绑定Entry
         self.input_var = tk.StringVar()
         self.input_entry = tk.Entry(self.input_frame, textvariable=self.input_var, width=60)
@@ -58,6 +61,25 @@ class ResumeBuilderGUI:
         self.process_button = tk.Button(main_frame, text="生成HTML", command=self.process_files)
         self.process_button.pack(pady=20)
 
+    def generate_html(self, template_path, data):
+        """使用Jinja2模板生成HTML内容"""
+        try:
+            # 创建模板加载器
+            env = Environment(loader=FileSystemLoader(os.path.dirname(template_path)))
+
+            # 获取模板对象
+            template = env.get_template(os.path.basename(template_path))
+
+            # 渲染模板
+            html_content = template.render(data)
+
+            return html_content
+        except Exception as e:
+            # 记录错误日志
+            logging.error(f"生成HTML时出错: {e}", exc_info=True)
+            # 抛出异常以便上层处理
+            raise RuntimeError(f"生成HTML失败: {str(e)}) from e")
+
     def select_input_file(self):
         """选择输入文件"""
         path = filedialog.askopenfilename(
@@ -67,6 +89,7 @@ class ResumeBuilderGUI:
         if path:
             self.input_var.set(path)  # 使用StringVar的set方法
             self.status_bar.config(text=f"输入文件: {os.path.basename(path)}")
+
 
     def select_file(self, category):
         """通用文件选择方法"""
@@ -102,18 +125,35 @@ class ResumeBuilderGUI:
         self.process_button.config(state=tk.DISABLED)
 
         # 使用线程防止界面冻结
-        thread = Thread(target=self._process后台任务, args=(input_path, template_path))
+        thread = Thread(target=self._process, args=(input_path, template_path))
         thread.start()
 
-    def _process后台任务(self, input_path, template_path):
+    def _process(self, input_path, template_path):
         try:
-            # 解析Markdown
-            resume_data = parse_markdown_to_json(input_path)
+            # 解析Markdown文件
+            resume_data = ''
+            try:
+                with open(input_path, 'r', encoding='utf-8') as file:
+                    markdown_content = file.read()
+                resume_data = parse_markdown_to_json(markdown_content)
+                # 测试，是否提取信息
+                # print(resume_data, end='\n')
+            except Exception as e:
+                print(f"处理文件时出现错误:{e}")
 
-            # 生成HTML
+            # 数据完整性验证
+            required_fields = ['name', 'job_intention', 'personal_info', 'education', 'skills', 'certificates']
+            for field in required_fields:
+                if field not in resume_data:
+                    raise ValueError(f"缺失必要字段: {field}")
+
+            # 打印调试信息（生产环境请删除）
+            logging.debug(f"解析后的数据: {json.dumps(resume_data, indent=2)}")
+
+            # 生成HTML内容
             html_content = self.generate_html(template_path, resume_data)
 
-            # 保存HTML
+            # 保存HTML文件
             save_path = filedialog.asksaveasfilename(
                 defaultextension='.html',
                 filetypes=[("HTML files", "*.html")]
@@ -130,15 +170,6 @@ class ResumeBuilderGUI:
             self.status_bar.config(text=f"错误: {str(e)}", fg="red")
         finally:
             self.process_button.config(state=tk.NORMAL)
-
-    def generate_html(self, template_path, data):
-        """使用Jinja2模板生成HTML内容"""
-        try:
-            env = Environment(loader=FileSystemLoader(os.path.dirname(template_path)))
-            template = env.get_template(os.path.basename(template_path))
-            return template.render(data)
-        except Exception as e:
-            raise RuntimeError(f"生成HTML时出错: {str(e)}") from e
 
 
 def main():
