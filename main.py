@@ -28,15 +28,15 @@ if __name__ == "__main__":
         json_output = json.dumps(resume_data, indent=4, ensure_ascii=False)
         print(json_output)
 
-# 设置Jinja2环境
-env = Environment(loader=FileSystemLoader('.'))
-template = env.get_template('模板1.html')
+        # 设置Jinja2环境
+        env = Environment(loader=FileSystemLoader('.'))
+        template = env.get_template('模板1.html')
 
-#生成HTML
-output_html = template.render(resume_data)
+        #生成HTML
+        output_html = template.render(resume_data)
 
-# 保存结果
-with open('resume.html', 'w', encoding='utf-8') as f:
-    f.write(output_html)
+        # 保存结果
+        with open('resume.html', 'w', encoding='utf-8') as f:
+            f.write(output_html)
 
-print("简历已生成：resume.html")
+        print("简历已生成：resume.html")
