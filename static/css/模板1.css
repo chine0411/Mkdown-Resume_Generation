@@ -1,0 +1,240 @@
+/* 整体容器样式 */
+.resume-container {
+    display: flex;
+    width: 210mm;                          /* A4纸宽度 */
+    height: 297mm;                         /* A4纸高度 */
+    margin: 20px auto;                     /* 页面居中 */
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);  /* 柔和的阴影效果 */
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;  /* 更现代的字体组合 */
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;                   /* 圆角效果 */
+    background-color: #fff;
+    transition: all 0.3s ease;             /* 平滑过渡效果 */
+}
+
+/* 鼠标悬停效果 */
+.resume-container:hover {
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);           / * 轻微上浮效果 */
+}
+
+/* 左侧部分样式 */
+.left-section {
+    width: 30%;                            /* 调整左侧宽度比例 */
+    background: linear-gradient(145deg, #f8d7c7, #f5c1aa);  /* 渐变背景 */
+    padding: 40px 25px;                    /* 增加内边距 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* 头像样式 */
+.profile-pic img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 25px;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+}
+
+.profile-pic img:hover {
+    transform: scale(1.05) rotate(2deg);   /* 旋转效果 */
+    border-color: #fff;
+}
+
+/* 姓名样式 */
+.name {
+    font-size: 2.2em;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #2c3e50;                        /* 深色系 */
+    text-align: center;
+    letter-spacing: 1px;                   /* 字间距 */
+}
+
+/* 职位标题样式 */
+.job-title {
+    font-size: 1.2em;
+    color: #34495e;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* 基本信息和个人信息区域 */
+.basic-info,
+.personal_info,
+.education {
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 0 15px;
+}
+
+/* 标题样式统一 */
+.basic-info h3,
+.personal_info h3,
+.education h3 {
+    border-bottom: 2px solid rgba(211, 158, 131, 0.5);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 1.3em;
+    font-weight: 600;
+    position: relative;
+}
+
+/* 标题下划线动画效果 */
+.basic-info h3::after,
+.personal_info h3::after,
+.education h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: #d39e83;
+    transition: width 0.3s ease;
+}
+
+/* 标题悬停效果 */
+.basic-info h3:hover::after,
+.personal_info h3:hover::after,
+.education h3:hover::after {
+    width: 100%;
+}
+
+/* 段落文本样式 */
+.basic-info p,
+.personal_info p{
+    margin-bottom: 12px;
+    color: #34495e;
+    font-size: 0.95em;
+    line-height: 0.6;
+    transition: all 0.3s ease;
+}
+.education p {
+    margin-bottom: 12px;
+    color: #34495e;
+    font-size: 0.95em;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+}
+
+/* 右侧部分样式 */
+.right-section {
+    width: 70%;
+    padding: 40px 35px;
+    background-color: #fff;
+}
+
+/* 右侧各部分样式 */
+.skills,
+.certificates,
+.work_experience,
+.self_evaluation {
+    margin-bottom: 35px;
+}
+
+/* 右侧标题样式 */
+.skills h3,
+.certificates h3,
+.work_experience h3,
+.self_evaluation h3 {
+    color: #2c3e50;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
+    position: relative;
+}
+
+/* 右侧标题装饰线 */
+.skills h3::after,
+.certificates h3::after,
+.work_experience h3::after,
+.self_evaluation h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #d39e83;
+}
+
+/* 列表样式 */
+.skills li,
+.certificates li,
+.work_experience ul {
+    list-style: none;
+    padding-left: 5px;
+}
+
+/* 列表项样式 */
+.skills li,
+.certificates li {
+    margin-bottom: 12px;
+    color: #34495e;
+    font-size: 0.95em;
+    position: relative;
+    padding-left: 20px;
+    line-height: 0.6;
+}
+
+.work_experience li {
+    margin-bottom: 12px;
+    color: #34495e;
+    font-size: 0.95em;
+    position: relative;
+    padding-left: 0px;
+    line-height: 0.6;
+}
+
+/* 列表项前的装饰 */
+.skills li::before,
+.certificates li::before{
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #d39e83;
+    font-weight: bold;
+}
+
+/* 自我总结 */
+.self_evaluation p {
+    margin-bottom: 12px;
+    color: #34495e;
+    font-size: 0.95em;
+    position: relative;
+    padding-left: 0px;
+    line-height: 1.6;
+    text-indent: 2em; /* 设置首行缩进 2 个字符的距离，可按需调整 */
+}
+
+/* 添加响应式悬停效果 */
+.skills li:hover,
+.certificates li:hover,
+.work_experience li:hover {
+    transform: translateX(5px);
+    color: #2c3e50;
+}
+
+/* 添加打印优化 */
+@media print {
+    .resume-container {
+        box-shadow: none;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    body {
+        background: none;
+    }
+}
