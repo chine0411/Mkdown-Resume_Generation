@@ -48,8 +48,8 @@ F --> G[保存文件]
 
 ### 3. 支撑模块
 
-日志模块：logging标准库
-文件操作：os/filedialog组合
+日志模块：logging标准库\
+文件操作：os/filedialog组合\
 模板引擎：Jinja2渲染引擎
 
 ---
