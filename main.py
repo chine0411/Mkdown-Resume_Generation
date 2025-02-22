@@ -7,7 +7,7 @@ from tkinter import filedialog
 
 from jinja2 import Environment, FileSystemLoader
 
-from mk_p import parse_markdown_to_json
+from module.mk_p import parse_markdown_to_json
 
 # 配置日志
 logging.basicConfig(
