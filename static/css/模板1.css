@@ -150,7 +150,7 @@
 .certificates li,
 .work_experience ul {
     list-style: none;
-    padding-left: 5px;
+    padding-left: 15px;
 }
 
 /* 列表项样式 */
@@ -161,7 +161,7 @@
     font-size: 0.95em;
     position: relative;
     padding-left: 20px;
-    line-height: 0.6;
+    line-height: 1.6;
 }
 
 .work_experience li {
@@ -170,7 +170,7 @@
     font-size: 0.95em;
     position: relative;
     padding-left: 0px;
-    line-height: 0.6;
+    line-height: 1.6;
 }
 
 /* 列表项前的装饰 */

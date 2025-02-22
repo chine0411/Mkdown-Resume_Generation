@@ -1,0 +1,129 @@
+:root {
+    /* 全局基础样式配置 */
+    --primary-color: #f8f9fa; /* A4纸张背景色（浅灰） */
+    --text-color: #2c3e50;   /* 主文字颜色（深灰） */
+    --font-family: 'Arial', sans-serif; /* 字体配置（中文字体需在HTML中单独设置） */
+    --page-width: 210mm;    /* A4纸宽度 */
+    --page-height: 297mm;   /* A4纸高度 */
+}
+
+body {
+    font-family: var(--font-family); /* 使用全局字体 */
+    line-height: 1.6; /* 行间距（提升阅读流畅度） */
+    margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
+    min-width: var(--page-width); /* 最小宽度限制（防止内容被缩放挤压） */
+    max-width: var(--page-height); /* 最大宽度限制（防止横向溢出） */
+    color: var(--text-color); /* 全局文字颜色 */
+    background-color: var(--primary-color); /* 整体背景色（与纸张一致） */
+
+    width: 100%; /* 宽度占满容器 */
+    height: 100vh; /* 高度占满视口 */
+    display: flex; /* 弹性布局容器（关键居中手段） */
+    justify-content: center; /* 主轴方向居中对齐（实现纵向内容居中） */
+    /* 通过flex布局实现纵向页面内容居中显示 */
+}
+
+.container {
+    width: 100%; /* 纵向排版最佳宽度比例（保证内容密集不松散） */
+    max-width: 600px; /* 保证打印清晰度的最大宽度（约24磅字号可清晰显示） */
+    margin: 0 auto; /* 自动外边距居中（使容器水平居中） */
+    /* 重要内容容器，控制整体内容区域 */
+}
+
+h1 {
+    text-align: center; /* 标题居中对齐（解决用户提出的居中问题） */
+    color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
+    margin-bottom: 25mm; /* 标题与正文间距（符合视觉呼吸感） */
+    font-size: 24pt; /* 主标题字号（24磅，印刷体标准） */
+    /* 顶部个人信息区标题样式 */
+}
+
+h2 {
+    color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
+    border-bottom: 3px solid #3498db; /* 蓝色下划线装饰（关键视觉引导） */
+    padding-bottom: 5px; /* 下划线与文字间距（避免粘连） */
+    margin-top: 5mm; /* 段落间垂直间距（控制信息密度） */
+    /* 二级标题样式（如"教育背景"） */
+}
+
+.skill-item {
+    display: flex; /* 弹性布局实现分栏效果（关键信息分组） */
+    justify-content: space-between; /* 左右元素间距分配（平衡视觉重量） */
+    margin-bottom: 8mm; /* 技能项间垂直间距缩减（提高信息密度） */
+    padding: 5mm; /* 内边距缓冲（提升可点击区域） */
+    background-color: #f1f1f1; /* 浅灰色背景区分技能项（降低视觉疲劳） */
+    border-radius: 3mm; /* 圆角边框（现代设计特征） */
+    /* 技能清单项的统一样式 */
+}
+
+.github-badge {
+    margin-top: 5mm; /* 悬停按钮与上方内容的间距（防止视觉粘连） */
+    padding: 3mm 8mm; /* 按钮内边距（符合人机交互规范） */
+    background-color: #3498db; /* 主题蓝色背景（品牌色延续） */
+    color: white; /* 白色文字（高对比度可读性） */
+    border-radius: 3mm; /* 圆角边框（与整体设计语言统一） */
+    text-decoration: none; /* 去除链接下划线（保持界面整洁） */
+    /* GitHub开源仓库徽章样式 */
+}
+
+/* 打印媒体查询优化（保留原始背景） */
+@media print {
+    /* 强制使用A4纵向页面 */
+    @page {
+        size: A4 portrait;
+        margin: 0 !important;  /* 强制边距为0（避免打印机自动添加边距） */
+    }
+
+    /* 重置body样式 */
+    body {
+        background: inherit !important;       /* 继承屏幕背景（保持设计一致性） */
+        margin: 0 !important;    /* 确保内容无默认边距 */
+    }
+
+    /* 保留容器核心样式 */
+    .resume-container {
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 auto !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        border-radius: 0px !important;      /* 保留圆角（根据实际设计决定） */
+        background-color: #fff !important;
+    }
+
+    /* 新增：防止标题分页 */
+    h1 {
+        page-break-after: avoid; /* 标题后禁止分页 */
+    }
+
+    /* 新增：强制内容连续 */
+    .education-section,
+    .skill-section,
+    .project-section {
+        page-break-inside: avoid; /* 防止段落内部分页 */
+    }
+
+    /* 保留左侧渐变背景 */
+    .left-section {
+        background: linear-gradient(145deg, #f8d7c7, #f5c1aa) !important;
+    }
+
+    /* 保留头像边框和阴影 */
+    .profile-pic img {
+        width: 160px;
+        height: 160px;
+        object-fit: cover;
+        margin: 0 auto;  /* 居中显示 */
+    }
+
+    /* 确保颜色准确打印 */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* 隐藏分页符 */
+    .page-break {
+        page-break-after: avoid !important;
+    }
+}
