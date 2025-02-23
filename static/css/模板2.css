@@ -16,7 +16,7 @@ body {
     color: var(--text-color); /* 全局文字颜色 */
     background-color: var(--primary-color); /* 整体背景色（与纸张一致） */
 
-    width: 100%; /* 宽度占满容器 */
+    width: 80%; /* 宽度占满容器 */
     height: 100vh; /* 高度占满视口 */
     display: flex; /* 弹性布局容器（关键居中手段） */
     justify-content: center; /* 主轴方向居中对齐（实现纵向内容居中） */
@@ -71,7 +71,7 @@ h2 {
     /* 强制使用A4纵向页面 */
     @page {
         size: A4 portrait;
-        margin: 0 !important;  /* 强制边距为0（避免打印机自动添加边距） */
+       margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
     }
 
     /* 重置body样式 */
@@ -92,29 +92,19 @@ h2 {
     }
 
     /* 新增：防止标题分页 */
-    h1 {
+    h2 {
         page-break-after: avoid; /* 标题后禁止分页 */
     }
 
     /* 新增：强制内容连续 */
     .education-section,
-    .skill-section,
-    .project-section {
+    .skill-item,
+    .experience,
+    .project,
+    .{
         page-break-inside: avoid; /* 防止段落内部分页 */
     }
 
-    /* 保留左侧渐变背景 */
-    .left-section {
-        background: linear-gradient(145deg, #f8d7c7, #f5c1aa) !important;
-    }
-
-    /* 保留头像边框和阴影 */
-    .profile-pic img {
-        width: 160px;
-        height: 160px;
-        object-fit: cover;
-        margin: 0 auto;  /* 居中显示 */
-    }
 
     /* 确保颜色准确打印 */
     * {
