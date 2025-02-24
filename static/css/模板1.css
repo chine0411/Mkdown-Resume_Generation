@@ -33,4 +33,189 @@
    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* 添加微妙阴影效果 */
 }  /* 参考：[4,5](@ref) */
 
-/* 姓名样式
+/* 姓名样式 */
+.name {
+   font-size: 2.2em;  /* 设置较大字体 */
+   font-weight: 600;  /* 加粗字体 */
+   margin-bottom: 10px;  /* 添加间距 */
+   color: #2c3e50;  /* 使用深灰色系 */
+   text-align: center;  /* 文本居中对齐 */
+   letter-spacing: 1px;  /* 调整字间距 */
+}  /* 参考：[2,7](@ref) */
+
+/* 职位标题样式 */
+.job-title {
+   font-size: 1.2em;  /* 稍小字体 */
+   color: #34495e;  /* 使用稍浅的深灰色 */
+   margin-bottom: 25px;  /* 添加间距 */
+   text-align: center;  /* 文本居中对齐 */
+   font-weight: 500;  /* 中等加粗 */
+   letter-spacing: 0.5px;  /* 微调字间距 */
+}  /* 参考：[2,7](@ref) */
+
+/* 基本信息和个人信息区域 */
+.basic-info,
+.personal_info,
+.education {
+   width: 100%;  /* 占据左侧全部宽度 */
+   margin-bottom: 30px;  /* 添加间距 */
+   padding: 0 15px;  /* 内边距 */
+}  /* 参考：[2,8](@ref) */
+
+/* 标题样式统一 */
+.basic-info h3,
+.personal_info h3,
+.education h3 {
+   border-bottom: 2px solid rgba(211, 158, 131, 0.5);  /* 添加下划线 */
+   padding-bottom: 8px;  /* 下划线内边距 */
+   margin-bottom: 15px;  /* 标题间距 */
+   color: #2c3e50;  /* 使用深灰色系 */
+   font-size: 1.3em;  /* 标题字体大小 */
+   font-weight: 600;  /* 加粗字体 */
+   position: relative;  /* 为伪元素提供定位参考 */
+}  /* 参考：[2,8](@ref) */
+
+/* 标题下划线样式 */
+.basic-info h3::after,
+.personal_info h3::after,
+.education h3::after {
+   content: '';  /* 伪元素内容 */
+   position: absolute;
+   bottom: -2px;  /* 位置调整 */
+   left: 0;  /* 左对齐 */
+   width: 20%;  /* 下划线宽度 */
+   height: 2px;  /* 下划线高度 */
+   background-color: #d39e83;  /* 颜色设置 */
+}  /* 参考：[8](@ref) */
+
+/* 右侧部分样式 */
+.right-section {
+   width: 70%;  /* 右侧占整体70%宽度 */
+   padding: 40px 35px;  /* 内边距 */
+   background-color: #fff;  /* 设置白色背景 */
+}  /* 参考：[2,8](@ref) */
+
+/* 右侧各部分样式 */
+.skills,
+.certificates,
+.work_experience,
+.self_evaluation {
+   margin-bottom: 35px;  /* 模块间距 */
+}  /* 参考：[2,8](@ref) */
+
+/* 右侧标题样式 */
+.skills h3,
+.certificates h3,
+.work_experience h3,
+.self_evaluation h3 {
+   color: #2c3e50;  /* 使用深灰色系 */
+   font-size: 1.4em;  /* 标题字体大小 */
+   margin-bottom: 20px;  /* 标题间距 */
+   padding-bottom: 8px;  /* 下划线内边距 */
+   border-bottom: 2px solid #eee;  /* 添加下划线 */
+   position: relative;  /* 为伪元素提供定位参考 */
+}  /* 参考：[2,8](@ref) */
+
+/* 右侧标题装饰线 */
+.skills h3::after,
+.certificates h3::after,
+.work_experience h3::after,
+.self_evaluation h3::after {
+   content: '';  /* 伪元素内容 */
+   position: absolute;
+   bottom: -2px;  /* 位置调整 */
+   left: 0;  /* 左对齐 */
+   width: 10%;  /* 装饰线宽度 */
+   height: 2px;  /* 装饰线高度 */
+   background-color: #d39e83;  /* 颜色设置 */
+}  /* 参考：[8](@ref) */
+
+/* 列表样式 */
+.skills li,
+.certificates li,
+.work_experience ul {
+   list-style: none;  /* 移除默认列表样式 */
+   padding-left: 15px;  /* 列表项内边距 */
+}  /* 参考：[2,8](@ref) */
+
+/* 列表项样式 */
+.skills li,
+.certificates li {
+   margin-bottom: 12px;  /* 列表项间距 */
+   color: #34495e;  /* 使用稍浅的深灰色 */
+   font-size: 0.95em;  /* 较小字体 */
+   position: relative;  /* 为伪元素提供定位参考 */
+   padding-left: 20px;  /* 列表项内边距 */
+   line-height: 1.6;  /* 行高设置 */
+}  /* 参考：[2,8](@ref) */
+
+/* 列表项前的装饰 */
+.skills li::before,
+.certificates li::before {
+   content: '•';  /* 生成项目符号 */
+   position: absolute;
+   left: 0;  /* 左对齐 */
+   color: #d39e83;  /* 装饰颜色 */
+   font-weight: bold;  /* 加粗字体 */
+}  /* 参考：[8](@ref) */
+
+/* 自我总结 */
+.self_evaluation p {
+   margin-bottom: 12px;  /* 段落间距 */
+   color: #34495e;  /* 使用稍浅的深灰色 */
+   font-size: 0.95em;  /* 较小字体 */
+   position: relative;  /* 为伪元素提供定位参考 */
+   padding-left: 0px;  /* 列表项内边距 */
+   line-height: 1.6;  /* 行高设置 */
+   text-indent: 2em;  /* 首行缩进 */
+}  /* 参考：[2,8](@ref) */
+
+/* 打印媒体查询优化 */
+@media print {
+   /* 强制使用A4纵向页面 */
+   @page {
+       size: A4 portrait;
+       margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
+   }
+
+   /* 重置body样式 */
+   body {
+       background: inherit !important;  /* 继承屏幕背景 */
+       margin: 0 !important;  /* 确保内容无默认边距 */
+   }
+
+   /* 保留容器核心样式 */
+   .resume-container {
+       width: 210mm !important;
+       height: 297mm !important;
+       margin: 0 auto !important;
+       overflow: visible !important;
+       box-shadow: none !important;
+       border-radius: 12px !important;  /* 保留圆角 */
+       background-color: #fff !important;
+   }
+
+   /* 保留左侧渐变背景 */
+   .left-section {
+       background: linear-gradient(145deg, #f8d7c7, #f5c1aa) !important;
+   }
+
+   /* 保留头像边框和阴影 */
+   .profile-pic img {
+       width: 160px;
+       height: 160px;
+       object-fit: cover;
+       margin: 0 auto;  /* 居中显示 */
+   }
+
+   /* 确保颜色准确打印 */
+   * {
+       -webkit-print-color-adjust: exact !important;
+       print-color-adjust: exact !important;
+   }
+
+   /* 隐藏分页符 */
+   .page-break {
+       page-break-after: avoid !important;
+   }
+}  /* 参考：[8](@ref) */
