@@ -71,7 +71,7 @@ h2 {
     /* 强制使用A4纵向页面 */
     @page {
         size: A4 portrait;
-       margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
+        margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
     }
 
     /* 重置body样式 */

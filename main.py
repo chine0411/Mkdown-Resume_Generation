@@ -1,6 +1,6 @@
-import json
 import logging
 import os
+import json
 import tkinter as tk
 from threading import Thread
 from tkinter import filedialog
