@@ -30,7 +30,8 @@ def parse_markdown_to_json(md_content):
             "ethnicity": None,
             "age": None,
             "contact": None,
-            "e_mail": None
+            "e_mail": None,
+            "face": None,
         },
         "education": [],
         "skills": [],
@@ -248,11 +249,12 @@ def parse_markdown_to_json(md_content):
 
                 for block_type, content in content_blocks:
                     if block_type == 'description':
-                        description = content
+                        description = content, print('描述', description)
                     elif block_type == 'modules':
-                        tech_stack = [item for item in content if item.startswith('技术栈')]
+                        tech_stack = [item for item in content if item.startswith('技术栈')], print('技术栈', tech_stack)
                         achievement = [item for item in content if item.startswith('个人成果')][0] if any(
                             item.startswith('个人成果') for item in content) else ""
+                        print('个人成果')
 
                 data[target_key].append({
                     "project_name": project_name,
@@ -272,10 +274,8 @@ def parse_markdown_to_json(md_content):
         :param target_key: 目标 JSON 键
         """
         evaluation_item = section.find_next()
-        print(evaluation_item)
         if evaluation_item:
             data[target_key] = evaluation_item.get_text().strip()
-            print(data)
 
     # 调用解析函数
     parse_section('姓名', 'name', parse_name)
