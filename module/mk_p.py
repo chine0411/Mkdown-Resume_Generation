@@ -228,39 +228,25 @@ def parse_markdown_to_json(md_content):
         Pro_items = section.find_all_next('h2')
         for Pro in Pro_items:
             try:
-                project_name = Pro.get_text().strip().lstrip('## ').rstrip('\n')
+                project_names = Pro.get_text().strip().split(' | ')
+                if len(project_names) < 2:
+                    raise ValueError("项目经历格式错误")
 
-                # 直接解析后续内容块而非特定容器
-                content_blocks = []
-                current_block = None
-                next_node = Pro.find_next()
+                project_name = project_names[0].strip()
+                team = project_names[1].strip()
 
-                while next_node and (next_node.name == 'p' or next_node.name == 'ul'):
-                    if next_node.name == 'p' and not current_block:
-                        content_blocks.append(('description', next_node.get_text().strip()))
-                    elif next_node.name == 'ul':
-                        items = [li.get_text().strip() for li in next_node.find_all('li')]
-                        content_blocks.append(('modules', items))
-                    next_node = next_node.find_next()
-
-                description = ""
-                tech_stack = []
-                achievement = ""
-
-                for block_type, content in content_blocks:
-                    if block_type == 'description':
-                        description = content, print('描述', description)
-                    elif block_type == 'modules':
-                        tech_stack = [item for item in content if item.startswith('技术栈')], print('技术栈', tech_stack)
-                        achievement = [item for item in content if item.startswith('个人成果')][0] if any(
-                            item.startswith('个人成果') for item in content) else ""
-                        print('个人成果')
+                datalists_ul = Pro.find_next('ul')
+                datalis = []
+                if datalists_ul:
+                    for li in datalists_ul.find_next('ul'):
+                        stripped_text = li.get_text().strip()
+                        if stripped_text:
+                            datalis.append(stripped_text)
 
                 data[target_key].append({
                     "project_name": project_name,
-                    "description": description,
-                    "tech_stack": tech_stack,
-                    "achievement": achievement
+                    "team": team,
+                    "achievement": datalis
                 })
             except Exception as e:
                 logging.error(f"解析项目经历失败：{Pro.get_text()} - {str(e)}")
@@ -329,7 +315,7 @@ def parse_markdown_to_json(md_content):
 #
 #
 # # 项目经历
-# ## 智能简历生成系统（个人项目）
+# ## 智能简历生成系统 | 个人项目
 # - **目标**：通过AI生成个性化简历
 # - **技术实现**：
 #   - 使用GPT-4 API解析用户输入
@@ -337,7 +323,7 @@ def parse_markdown_to_json(md_content):
 #   - 集成GitHub/LinkedIn数据自动填充
 # - **成果**：开源项目地址 [https://github.com/zhangsan/resume-generator](https://github.com/zhangsan/resume-generator)
 #
-# ## 在线教育平台（团队项目）
+# ## 在线教育平台 | 团队项目
 # - **角色**：前端开发工程师
 # - **技术栈**：
 #   - React.js、Vue.js
