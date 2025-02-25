@@ -1,92 +1,42 @@
+:root {
+    /* 全局基础样式配置 */
+    --primary-color: #f8f9fa; /* A4纸张背景色（浅灰） */
+    --text-color: #2c3e50;   /* 主文字颜色（深灰） */
+    --font-family: 'Arial', sans-serif; /* 字体配置（中文字体需在HTML中单独设置） */
+    --page-width: 210mm;    /* A4纸宽度 */
+    --page-height: 297mm;   /* A4纸高度 */
+}
+
 /* 整体容器样式 */
-.resume-container {
-   display: flex;  /* 使用弹性布局 */
-   width: 210mm;    /* A4纸标准宽度 */
-   height: 297mm;   /* A4纸标准高度 */
-   margin: 20px auto;  /* 页面水平居中 */
-   box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);  /* 添加柔和阴影效果 */
-   font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;  /* 使用现代字体组合 */
-   position: relative;  /* 为绝对定位子元素提供参考 */
-   overflow: hidden;    /* 隐藏溢出内容 */
+body {
+   font-family: var(--font-family); /* 使用全局字体 */
+   line-height: 1.6; /* 行间距（提升阅读流畅度） */
+   min-width: var(--page-width); /* 最小宽度限制（防止内容被缩放挤压） */
+   max-width: var(--page-height); /* 最大宽度限制（防止横向溢出） */
+   color: var(--text-color); /* 全局文字颜色 */
+   background-color: var(--primary-color); /* 整体背景色（与纸张一致） */
+   width: 100%; /* 宽度占满容器 */
+   height: 100vh; /* 高度占满视口 */
+   display: flex; /* 弹性布局容器（关键居中手段） */
+   margin: 0px auto;  /* html打开后位于屏幕中间 */
    background-color: #fff;  /* 设置白色背景 */
-}  /* 参考：[2,4,7](@ref) */
+}
+
+.container {
+    display: flex; /* 使用flex弹性布局 */
+    max-width: 100  px; /* 保证打印清晰度的最大宽度（约24磅字号可清晰显示） */
+    /* 重要内容容器，控制整体内容区域 */
+}
 
 /* 左侧部分样式 */
 .left-section {
-   width: 30%;  /* 左侧占整体30%宽度 */
+   width: 40%;  /* 左侧占整体30%宽度 */
    background: linear-gradient(145deg, #f8d7c7, #f5c1aa);  /* 设置渐变背景色 */
-   padding: 100px 25px;  /* 增加内边距提升可读性 */
+   padding: 40px 25px;  /* 增加内边距提升可读性 */
    display: flex;
    flex-direction: column;  /* 垂直排列子元素 */
-   align-items: center;  /* 水平居中对齐子元素 */
    position: relative;  /* 为绝对定位子元素提供参考 */
-}  /* 参考：[2,8](@ref) */
-
-/* 头像样式 */
-.profile-pic img {
-   width: 160px;
-   height: 160px;
-   object-fit: cover;  /* 保持图片比例并覆盖整个容器 */
-   border-radius: 50%;  /* 将图片转为圆形 */
-   margin-bottom: 25px;  /* 添加间距 */
-   border: 4px solid rgba(255, 255, 255, 0.8);  /* 添加半透明白色边框 */
-   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* 添加微妙阴影效果 */
-}  /* 参考：[4,5](@ref) */
-
-/* 姓名样式 */
-.name {
-   font-size: 2.2em;  /* 设置较大字体 */
-   font-weight: 600;  /* 加粗字体 */
-   margin-bottom: 10px;  /* 添加间距 */
-   color: #2c3e50;  /* 使用深灰色系 */
-   text-align: center;  /* 文本居中对齐 */
-   letter-spacing: 1px;  /* 调整字间距 */
-}  /* 参考：[2,7](@ref) */
-
-/* 职位标题样式 */
-.job-title {
-   font-size: 1.2em;  /* 稍小字体 */
-   color: #34495e;  /* 使用稍浅的深灰色 */
-   margin-bottom: 25px;  /* 添加间距 */
-   text-align: center;  /* 文本居中对齐 */
-   font-weight: 500;  /* 中等加粗 */
-   letter-spacing: 0.5px;  /* 微调字间距 */
-}  /* 参考：[2,7](@ref) */
-
-/* 基本信息和个人信息区域 */
-.basic-info,
-.personal_info,
-.education {
-   width: 100%;  /* 占据左侧全部宽度 */
-   margin-bottom: 30px;  /* 添加间距 */
-   padding: 0 15px;  /* 内边距 */
-}  /* 参考：[2,8](@ref) */
-
-/* 标题样式统一 */
-.basic-info h3,
-.personal_info h3,
-.education h3 {
-   border-bottom: 2px solid rgba(211, 158, 131, 0.5);  /* 添加下划线 */
-   padding-bottom: 8px;  /* 下划线内边距 */
-   margin-bottom: 15px;  /* 标题间距 */
-   color: #2c3e50;  /* 使用深灰色系 */
-   font-size: 1.3em;  /* 标题字体大小 */
-   font-weight: 600;  /* 加粗字体 */
-   position: relative;  /* 为伪元素提供定位参考 */
-}  /* 参考：[2,8](@ref) */
-
-/* 标题下划线样式 */
-.basic-info h3::after,
-.personal_info h3::after,
-.education h3::after {
-   content: '';  /* 伪元素内容 */
-   position: absolute;
-   bottom: -2px;  /* 位置调整 */
-   left: 0;  /* 左对齐 */
-   width: 20%;  /* 下划线宽度 */
-   height: 2px;  /* 下划线高度 */
-   background-color: #d39e83;  /* 颜色设置 */
-}  /* 参考：[8](@ref) */
+}
 
 /* 右侧部分样式 */
 .right-section {
@@ -95,80 +45,74 @@
    background-color: #fff;  /* 设置白色背景 */
 }  /* 参考：[2,8](@ref) */
 
-/* 右侧各部分样式 */
-.skills,
-.certificates,
-.work_experience,
-.self_evaluation {
-   margin-bottom: 35px;  /* 模块间距 */
-}  /* 参考：[2,8](@ref) */
 
-/* 右侧标题样式 */
-.skills h3,
-.certificates h3,
-.work_experience h3,
-.self_evaluation h3 {
-   color: #2c3e50;  /* 使用深灰色系 */
-   font-size: 1.4em;  /* 标题字体大小 */
-   margin-bottom: 20px;  /* 标题间距 */
-   padding-bottom: 8px;  /* 下划线内边距 */
-   border-bottom: 2px solid #eee;  /* 添加下划线 */
-   position: relative;  /* 为伪元素提供定位参考 */
-}  /* 参考：[2,8](@ref) */
+.profile-pic {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中（可选） */
+}
+/* 头像样式 */
+.profile-pic img {
+   width: 160px;
+   height: 160px;
+   object-fit: cover;  /* 保持图片比例并覆盖整个容器 */
+   border-radius: 70%;  /* 将图片转为圆形 */
+   margin-bottom: 15px;  /* 添加间距 */
+   border: 4px solid rgba(255, 255, 255, 0.8);  /* 添加半透明白色边框 */
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* 添加微妙阴影效果 */
+   margin-bottom: 15px;
+}
 
-/* 右侧标题装饰线 */
-.skills h3::after,
-.certificates h3::after,
-.work_experience h3::after,
-.self_evaluation h3::after {
-   content: '';  /* 伪元素内容 */
-   position: absolute;
-   bottom: -2px;  /* 位置调整 */
-   left: 0;  /* 左对齐 */
-   width: 10%;  /* 装饰线宽度 */
-   height: 2px;  /* 装饰线高度 */
-   background-color: #d39e83;  /* 颜色设置 */
-}  /* 参考：[8](@ref) */
+h1 {
+    text-align: center; /* 标题居中对齐（解决用户提出的居中问题） */
+    color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
+    margin-bottom: 10px; /* 标题与正文间距（符合视觉呼吸感） */
+    text-align: center;  /* 文本居中对齐 */
+    font-size: 24pt; /* 主标题字号（24磅，印刷体标准） */
+    /* 顶部个人信息区标题样式 */
+}
 
-/* 列表样式 */
-.skills li,
-.certificates li,
-.work_experience ul {
-   list-style: none;  /* 移除默认列表样式 */
-   padding-left: 15px;  /* 列表项内边距 */
-}  /* 参考：[2,8](@ref) */
+h2 {
+    color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
+    border-bottom: 3px solid rgba(211, 158, 131, 0.5);  /* 添加下划线 */
+    padding-bottom: 5px; /* 下划线与文字间距（避免粘连） */
+    margin-top:0px; /* 段落间垂直间距（控制信息密度） */
+    font-size: 17pt; /* 主标题字号（24磅，印刷体标准） */
+}
+h3 {
+    color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
+    margin-top:1mm; /* 段落间垂直间距（控制信息密度） */
+    font-size: 13pt; /* 主标题字号（24磅，印刷体标准） */
+    text-indent: -2em; /* 首行缩进2个字符宽度 */
+}
+li {
+    color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
+    margin-top:1mm; /* 段落间垂直间距（控制信息密度） */
+    font-size: 13pt; /* 主标题字号（24磅，印刷体标准） */
+    list-style: none;  /* 移除默认列表样式 */
+    margin-bottom: 5px; /* 项目间间距 */
+    text-indent: -2.5em; /* 首行缩进2个字符宽度 */
 
-/* 列表项样式 */
-.skills li,
-.certificates li {
-   margin-bottom: 12px;  /* 列表项间距 */
+ }
+
+.p {
+    text-indent: 2em; /* 首行缩进2个字符宽度 */
+ }
+/* 基本信息和个人信息区域 */
+.basic-info {
+   width: 100%;  /* 占据左侧全部宽度 */
+   margin-bottom: 30px;  /* 添加间距 */
+   padding: 0 5px;  /* 内边距 */
+}
+/* 岗位 */
+.job-title {
+   font-size: 1.2em;  /* 稍小字体 */
    color: #34495e;  /* 使用稍浅的深灰色 */
-   font-size: 0.95em;  /* 较小字体 */
-   position: relative;  /* 为伪元素提供定位参考 */
-   padding-left: 20px;  /* 列表项内边距 */
-   line-height: 1.6;  /* 行高设置 */
-}  /* 参考：[2,8](@ref) */
-
-/* 列表项前的装饰 */
-.skills li::before,
-.certificates li::before {
-   content: '•';  /* 生成项目符号 */
-   position: absolute;
-   left: 0;  /* 左对齐 */
-   color: #d39e83;  /* 装饰颜色 */
-   font-weight: bold;  /* 加粗字体 */
-}  /* 参考：[8](@ref) */
-
-/* 自我总结 */
-.self_evaluation p {
-   margin-bottom: 12px;  /* 段落间距 */
-   color: #34495e;  /* 使用稍浅的深灰色 */
-   font-size: 0.95em;  /* 较小字体 */
-   position: relative;  /* 为伪元素提供定位参考 */
-   padding-left: 0px;  /* 列表项内边距 */
-   line-height: 1.6;  /* 行高设置 */
-   text-indent: 2em;  /* 首行缩进 */
-}  /* 参考：[2,8](@ref) */
+   margin-bottom: 25px;  /* 添加间距 */
+   text-align: center;  /* 文本居中对齐 */
+   font-weight: 500;  /* 中等加粗 */
+   letter-spacing: 0.5px;  /* 微调字间距 */
+}
 
 /* 打印媒体查询优化 */
 @media print {
@@ -207,6 +151,7 @@
        object-fit: cover;
        margin: 0 auto;  /* 居中显示 */
    }
+
 
    /* 确保颜色准确打印 */
    * {
