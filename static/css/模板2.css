@@ -10,7 +10,7 @@
 body {
     font-family: var(--font-family); /* 使用全局字体 */
     line-height: 1.6; /* 行间距（提升阅读流畅度） */
-    margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
+
     min-width: var(--page-width); /* 最小宽度限制（防止内容被缩放挤压） */
     max-width: var(--page-height); /* 最大宽度限制（防止横向溢出） */
     color: var(--text-color); /* 全局文字颜色 */
@@ -19,14 +19,14 @@ body {
     width: 80%; /* 宽度占满容器 */
     height: 100vh; /* 高度占满视口 */
     display: flex; /* 弹性布局容器（关键居中手段） */
+    margin: 0px auto;  /* html打开后位于屏幕中间 */
     justify-content: center; /* 主轴方向居中对齐（实现纵向内容居中） */
     /* 通过flex布局实现纵向页面内容居中显示 */
 }
 
 .container {
     width: 100%; /* 纵向排版最佳宽度比例（保证内容密集不松散） */
-    max-width: 600px; /* 保证打印清晰度的最大宽度（约24磅字号可清晰显示） */
-    margin: 0 auto; /* 自动外边距居中（使容器水平居中） */
+    max-width: 600px; /* html中的显示宽度*/
     /* 重要内容容器，控制整体内容区域 */
 }
 
@@ -56,22 +56,12 @@ h2 {
     /* 技能清单项的统一样式 */
 }
 
-.github-badge {
-    margin-top: 5mm; /* 悬停按钮与上方内容的间距（防止视觉粘连） */
-    padding: 3mm 8mm; /* 按钮内边距（符合人机交互规范） */
-    background-color: #3498db; /* 主题蓝色背景（品牌色延续） */
-    color: white; /* 白色文字（高对比度可读性） */
-    border-radius: 3mm; /* 圆角边框（与整体设计语言统一） */
-    text-decoration: none; /* 去除链接下划线（保持界面整洁） */
-    /* GitHub开源仓库徽章样式 */
-}
-
 /* 打印媒体查询优化（保留原始背景） */
 @media print {
     /* 强制使用A4纵向页面 */
     @page {
         size: A4 portrait;
-        margin: 15mm 20mm; /* 页边距（上下1.5cm，左右2cm，符合标准简历格式） */
+        margin: 15mm; /* 规定上下页边距1.5cm */
     }
 
     /* 重置body样式 */
