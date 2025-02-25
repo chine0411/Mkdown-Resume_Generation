@@ -10,7 +10,7 @@
 /* 整体容器样式 */
 body {
    font-family: var(--font-family); /* 使用全局字体 */
-   line-height: 1.6; /* 行间距（提升阅读流畅度） */
+   line-height: 1.4; /* 行间距（提升阅读流畅度） */
    min-width: var(--page-width); /* 最小宽度限制（防止内容被缩放挤压） */
    max-width: var(--page-height); /* 最大宽度限制（防止横向溢出） */
    color: var(--text-color); /* 全局文字颜色 */
@@ -79,21 +79,28 @@ h2 {
     margin-top:0px; /* 段落间垂直间距（控制信息密度） */
     font-size: 17pt; /* 主标题字号（24磅，印刷体标准） */
 }
+h3 ~ li {
+    margin-top: -6px; /* 根据需要调整数值 */
+}
 h3 {
     color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
-    margin-top:1mm; /* 段落间垂直间距（控制信息密度） */
+    margin-top:-1mm; /* 段落间垂直间距（控制信息密度） */
     font-size: 13pt; /* 主标题字号（24磅，印刷体标准） */
-    text-indent: -2em; /* 首行缩进2个字符宽度 */
+    text-indent: 0em; /* 首行缩进2个字符宽度 */
 }
+
 li {
     color: var(--text-color); /* 使用全局文字颜色（保持一致性） */
-    margin-top:1mm; /* 段落间垂直间距（控制信息密度） */
+    margin-top:-1mm; /* 段落间垂直间距（控制信息密度） */
     font-size: 13pt; /* 主标题字号（24磅，印刷体标准） */
     list-style: none;  /* 移除默认列表样式 */
     margin-bottom: 5px; /* 项目间间距 */
-    text-indent: -2.5em; /* 首行缩进2个字符宽度 */
+    text-indent: 2em; /* 首行缩进2个字符宽度 */
 
  }
+.li {
+    text-indent: 2em; /* 首行缩进2个字符宽度 */
+}
 
 .p {
     text-indent: 2em; /* 首行缩进2个字符宽度 */
@@ -114,53 +121,64 @@ li {
    letter-spacing: 0.5px;  /* 微调字间距 */
 }
 
-/* 打印媒体查询优化 */
+/* 打印样式增强方案 */
 @media print {
-   /* 强制使用A4纵向页面 */
+/* 强制使用A4纵向页面 */
    @page {
        size: A4 portrait;
        margin:  0 !important; /* 保证能够让简历填充A4大小*/
    }
+  /* 强制精确颜色输出（关键设置） */
+  * {
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
 
-   /* 重置body样式 */
-   body {
-       background: inherit !important;  /* 继承屏幕背景 */
-       margin: 0 !important;  /* 确保内容无默认边距 */
-   }
+  /* 禁用浏览器默认字体替换 */
+  body, h1, h2, h3, p, li {
+    font-family: 'Arial', '黑体', sans-serif !important;
+    line-height: 1.4; /* 行间距（提升阅读流畅度） */
+  }
 
-   /* 保留容器核心样式 */
-   .resume-container {
-       width: 210mm !important;
-       height: 297mm !important;
-       margin: 0 auto !important;
-       overflow: visible !important;
-       box-shadow: none !important;
-       border-radius: 12px !important;  /* 保留圆角 */
-       background-color: #fff !important;
-   }
+  /* 字号单位统一为pt（印刷标准单位） */
+  h1 { font-size: 24pt !important; }
+  h2 { font-size: 17pt !important; }
+  h3 { font-size: 13pt !important; }
+  p, li { font-size: 11pt !important; }
 
-   /* 保留左侧渐变背景 */
-   .left-section {
-       background: linear-gradient(145deg, #f8d7c7, #f5c1aa) !important;
-   }
+  /* 精确尺寸控制（毫米单位适配A4纸） */
+  .container { width: 210mm !important; }
+  .left-section { width: 63mm !important; }  /* 40% of 210mm */
+  .right-section { width: 147mm !important; } /* 70% of 210mm */
 
-   /* 保留头像边框和阴影 */
-   .profile-pic img {
-       width: 160px;
-       height: 160px;
-       object-fit: cover;
-       margin: 0 auto;  /* 居中显示 */
-   }
+  /* 图片精确显示配置 */
+  .profile-pic img {
+    width: 42mm !important;  /* 160px ≈ 42mm (精确计算：160/3.779≈42.3mm) */
+    height: 42mm !important;
+    border-radius: 50% !important;
+  }
 
+  /* 严格边距控制（防止打印缩放） */
+  body { margin: 0 !important; padding: 0mm !important; }
+  .container { margin: 0 auto !important; }
 
-   /* 确保颜色准确打印 */
-   * {
-       -webkit-print-color-adjust: exact !important;
-       print-color-adjust: exact !important;
-   }
+  /* 隐藏非打印元素 */
+  .page-break { display: none !important; }
+  .no-print { display: none !important; }
 
-   /* 隐藏分页符 */
-   .page-break {
-       page-break-after: avoid !important;
-   }
-}  /* 参考：[8](@ref) */
+  /* 强制分页控制（重要内容后强制换页） */
+  .section-break {
+
+    height: 1px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #eee !important;
+    page-break-after: always !important;
+  }
+}
+
+/* HTML中需要添加的打印控制类 */
+<div class="no-print">
+  <button onclick="window.print()">打印简历</button>
+</div>
+
+<div class="section-break"></div>
