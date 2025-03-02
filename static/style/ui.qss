@@ -1,0 +1,37 @@
+/* 全局主题 */
+window {
+    background-color: #f5f5f5;
+    font-family: "微软雅黑";
+}
+
+/* 按钮样式 */
+QPushButton {
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 8px 16px;
+    margin: 5px;
+}
+
+QPushButton:hover {
+    background-color: #45a049;
+}
+
+/* 文本框样式 */
+LineEdit {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+/* 状态栏 */
+QStatusBar {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+/* 组合框下拉箭头 */
+QComboBox::drop-down {
+    width: 120px;
+}
