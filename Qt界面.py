@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QDesktopServices
 from PyQt5 import QtWidgets, QtCore, QtGui, QtWebEngineWidgets
-from ui2 import Ui_Form
-from mk_p import parse_markdown_to_json
+from static.UI.mkgui import Ui_Form
+from module.mk_p import parse_markdown_to_json
 from threading import Thread
 
 
@@ -38,7 +38,7 @@ class MyAppWindow(QWidget):
         self.output_path = None
 
         # 添加外部qss样式文件
-        self.load_style("ui.qss")
+        self.load_style("static/style/ui.qss")
         # 信号与槽连接
         self.ui.Button_mk.clicked.connect(self.select_input_file)
         self.ui.comboBox_tem.currentIndexChanged.connect(self.on_combobox_changed)
