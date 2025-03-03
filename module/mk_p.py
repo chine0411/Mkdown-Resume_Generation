@@ -1,55 +1,65 @@
 import logging
 import markdown
-import re
+import json
 from bs4 import BeautifulSoup
+import re
+import os
 
 # 配置日志记录
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # 分隔符配置
-SEPARATORS = [': ', ':', '：']
+SEPARATORS = ['：']
 
-def parse_markdown_to_json(md_content):
+
+def load_config(file_path):
+    """
+    加载配置文件（JSON 格式）
+
+    :param file_path: 配置文件路径
+    :return: 解析后的 JSON 数据
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except Exception as e:
+        logging.error(f"加载配置文件失败：{str(e)}")
+        return None
+
+
+def read_markdown_file(file_path):
+    """
+    从文件中读取 Markdown 内容
+
+    :param file_path: Markdown 文件路径
+    :return: Markdown 内容字符串
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()
+    except FileNotFoundError:
+        logging.error(f"文件未找到：{file_path}")
+        return None
+    except Exception as e:
+        logging.error(f"读取 Markdown 文件失败：{str(e)}")
+        return None
+
+
+def parse_markdown_to_json(md_content, config):
     """
     将 Markdown 格式的简历内容解析为 JSON 格式数据
 
     :param md_content: Markdown 格式的简历内容
+    :param config: 配置文件内容（JSON 格式）
     :return: 解析后的 JSON 数据
     """
     # 将 Markdown 转换为 HTML
     html = markdown.markdown(md_content)
-    # print(html)
+    print(html)
     soup = BeautifulSoup(html, 'html.parser')
 
-    # 初始化 JSON 数据结构
-    data = {
-        "name": None,
-        "job_intention": None,
-        "personal_info": {
-            "gender": None,
-            "ethnicity": None,
-            "age": None,
-            "contact": None,
-            "e_mail": None,
-            "face": None,
-        },
-        "education": [],
-        "skills": [],
-        "certificates": [],
-        "SC": [],
-        "work_experience": [],
-        "Project_experience": [],
-        "self_evaluation": None,
-    }
-
-    # 键名映射表
-    key_mapping = {
-        "性别": "gender",
-        "民族": "ethnicity",
-        "年龄": "age",
-        "联系方式": "contact",
-        "邮箱": "e_mail"
-    }
+    # 初始化 JSON 数据结构，使用 config 作为模板
+    data = config
 
     # 通用解析函数：解析标题下的内容
     def parse_section(header_text, target_key, parser_func):
@@ -72,15 +82,10 @@ def parse_markdown_to_json(md_content):
         :param section: 姓名部分的 HTML 节点
         :param target_key: 目标 JSON 键
         """
-        name_item = section.find_next('li')
+        name_item = section.find_next('p')
         if name_item:
             name_text = name_item.get_text()
-            try:
-                parts = name_text.split(': ', 1)
-                if len(parts) == 2:
-                    data[target_key] = parts[1].strip()
-            except ValueError:
-                logging.error(f"解析姓名 {name_text} 时出现格式错误")
+            data[target_key] = name_text
 
     # 解析求职意向
     def parse_job_intention(section, target_key):
@@ -102,6 +107,20 @@ def parse_markdown_to_json(md_content):
         :param section: 个人信息部分的 HTML 节点
         :param target_key: 目标 JSON 键
         """
+        # 键名映射表
+        key_mapping = {
+            "性别": "gender",
+            "民族": "ethnicity",
+            "年龄": "age",
+            "联系方式": "contact",
+            "邮箱": "e_mail",
+            "政治面貌": "face",
+            "国籍": "nationality",
+            "住址": "location",
+            "Linkedin": "linkedin",
+            "Github": "github",
+            "个人博客": "personal_website"
+        }
         info_items = section.find_next('ul').find_all('li')
         for item in info_items:
             item_text = item.get_text()
@@ -120,157 +139,345 @@ def parse_markdown_to_json(md_content):
     # 解析教育背景
     def parse_education(section, target_key):
         """解析教育背景信息"""
-        edu_items = []
-        next_element = section.find_next()
-        while next_element and next_element.name != 'h1':
-            if next_element.name == 'h2':
-                edu_items.append(next_element)
-            next_element = next_element.find_next()
+        key_edu = {
+            "学位": "degree",
+            "学校": "school",
+            "专业": "major",
+            "开始时间": "start_date",
+            "结束时间": "end_date",
+            "GPA": "gpa",
+            "主修课程": "courses",
+        }
+        edu_items = section.find_next('ul').find_all('li')
+        for items in edu_items:
+            edu_text = items.get_text()
+            for separator in SEPARATORS:
+                if separator in edu_text:
+                    try:
+                        key, value = edu_text.split(separator, 1)
+                        key = key.strip()
+                        value = value.strip()
+                        if key in key_edu:
+                            data["education"][key_edu[key]] = value
+                    except Exception as e:
+                        logging.error(f"解析教育背景失败：{edu_text} - {str(e)}")
 
-        for edu in edu_items:
-            try:
-                # 使用正则表达式匹配教育信息
-                edu_text = edu.get_text().strip()
-                degree_match = re.match(r'^([^|]+)\s*\|\s*(.+?)\s*\（(.+?)\）$', edu_text)
-                if not degree_match:
-                    raise ValueError("教育信息格式错误")
-                degree = degree_match.group(1).strip()
-                school = degree_match.group(2).strip()
-                dates_str = degree_match.group(3).strip()  # 已包含括号
-
-                # 解析日期范围
-                dates = re.findall(r'\d{4}\.\d{2} - \d{4}\.\d{2}', dates_str)
-                if not dates:
-                    raise ValueError("日期格式错误")
-                start_date, end_date = dates[0].split(' - ')
-
-                # 处理主修课程
-                major_p = edu.find_next('ul')
-                major = major_p.get_text().strip() if major_p else ""
-
-                data[target_key].append({
-                    "degree": degree,
-                    "school": school,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    "major": major
-                })
-            except Exception as e:
-                logging.error(f"解析教育背景失败：{edu.get_text()} - {str(e)}")
-
-    # 解析技能和证书（通用函数）
-    def parse_list_items(section, target_key):
+    def parse_skills(section, target_key):
         """
-        解析列表项信息（如技能、证书）
+        解析技能部分
 
-        :param section: 列表项部分的 HTML 节点
+        :param section: 技能部分的 HTML 节点
         :param target_key: 目标 JSON 键
         """
-        items = section.find_next('ul').find_all('li')
-        for item in items:
-            data[target_key].append(item.get_text().strip())
+        key_skills = {
+            "编程语言": "programming_languages",
+            "工具": "tools",
+            "框架": "frameworks",
+            "数据库": "databases",
+            "软件": "software",
+            "语言": "languages"
+        }
+        # 找到技能部分的<ul>
+        skills_items = section.find_next('ul').find_all('li')
+        for items in skills_items:
+            skill_text = items.get_text()
+            for separator in SEPARATORS:
+                if separator in skill_text:
+                    try:
+                        key, value = skill_text.split(separator, 1)
+                        key = key.strip()
+                        value = value.strip()
+                        if key in key_skills:
+                            data["skills"][key_skills[key]] = value
+                    except Exception as e:
+                        logging.error(f"解析技能失败：{skill_text}－{str(e)}")
+
+    # 证书选择
+    def parse_certificates(section, target_key):
+        """
+        解析证书部分
+
+        :param section: 证书部分的 HTML 节点
+        :param target_key: 目标 JSON 键
+        """
+        key_certificates = {
+            "证书名称": "certificate_name",
+            "颁发机构": "issuing_authority",
+            "获得日期": "obtained_date"
+        }
+
+        # 确保 data["certificates"] 是一个列表
+        if "certificates" not in data or not isinstance(data["certificates"], list):
+            data["certificates"] = []
+        # 清空初始值（覆盖初始值）
+        data["certificates"].clear()
+
+        # 初始化一个临时字典来存储当前证书的信息
+        current_cert = {}
+        certificates_items = section.find_next('ul').find_all('li')  # 找到所有 <li>
+
+        for item in certificates_items:
+            cer_text = item.get_text()
+            for separator in SEPARATORS:
+                if separator in cer_text:
+                    try:
+                        key, value = cer_text.split(separator, 1)
+                        key = key.strip()
+                        value = value.strip()
+                        if key in key_certificates:
+                            # 如果当前字段是“证书名称”，说明是一个新的证书的开始
+                            if key == "证书名称" and current_cert:
+                                # 保存当前证书
+                                data["certificates"].append(current_cert)
+                                current_cert = {}
+                            # 添加字段到当前证书
+                            current_cert[key_certificates[key]] = value
+                    except Exception as e:
+                        logging.error(f"解析证书失败：{cer_text} - {str(e)}")
+                    break  # 匹配到一个分隔符后跳出循环
+
+        # 保存最后一个证书
+        if current_cert:
+            data["certificates"].append(current_cert)
 
     # 解析工作经历
     def parse_work_experience(section, target_key):
-        """解析工作经历信息"""
-        work_items = []
-        # 找到当前h1之后的所有h2，直到下一个h1
-        current_node = section.find_next()
-        while current_node and current_node.name != 'h1':
-            if current_node.name == 'h2':
-                work_items.append(current_node)
-            current_node = current_node.find_next()
+        """
+        解析工作经历部分
 
-        for job in work_items:
-            try:
-                # 使用竖线分割职位和公司信息
-                job_parts = job.get_text().strip().split(' | ')
-                if len(job_parts) < 2:
-                    raise ValueError("工作经历格式错误")
+        :param section: 工作经历部分的 HTML 节点
+        :param target_key: 目标 JSON 键
+        """
+        key_experience = {
+            "公司名称": "company_name",
+            "职务": "position",
+            "开始时间": "start_date",
+            "结束时间": "end_date",
+            "描述": "description"
+        }
 
-                position = job_parts[0].strip()
-                company_info = ' '.join(job_parts[1:]).strip()
+        # 确保 data["work_experience"] 是一个列表
+        if "work_experience" not in data or not isinstance(data["work_experience"], list):
+            data["work_experience"] = []
 
-                # 分割公司和日期
-                company_dates = company_info.rsplit('（', 1)
-                if len(company_dates) != 2:
-                    raise ValueError("公司日期格式错误")
-                company = company_dates[0].strip()
-                dates = company_dates[1][:-1].strip()  # 移除右括号
+        # 清空初始值（覆盖初始值）
+        data["work_experience"].clear()
 
-                # 解析详细信息
-                details_ul = None
-                node = job.find_next()
-                while node and node.name != 'ul':
-                    node = node.find_next()
-                if node and node.name == 'ul':
-                    details_ul = node
+        work_experience_start = soup.find('h1', string="工作经历")
+        print(f'节点{work_experience_start}')
+        if not work_experience_start:
+            logging.error("未找到工作经历部分的起始点")
+            return
 
-                details = []
-                if details_ul:
-                    for li in details_ul.find_all('li'):
-                        stripped_text = li.get_text().strip()
-                        if stripped_text:
-                            details.append(stripped_text)
+        # 找到所有 <h2> 标签，每个 <h2> 代表一个工作经历
+        # 从起始点开始，找到所有 <h2> 标签，每个 <h2> 代表一个工作经历
+        next_node = work_experience_start.find_next_sibling()
+        while next_node and next_node.name != 'h1':
+            if next_node.name == 'h2':
+                new_experience = {}  # 初始化一个空字典来存储当前工作经历的信息
 
-                data[target_key].append({
-                    "position": position,
-                    "company": company,
-                    "dates": dates,
-                    "details": details
-                })
-            except Exception as e:
-                logging.error(f"解析工作经历失败：{job.get_text()} - {str(e)}")
+                # 找到 <h2> 标签之后的 <ul>
+                ul = next_node.find_next_sibling('ul')
+                if ul:
+                    li_items = ul.find_all('li')
+                    description_started = False  # 标记描述部分是否开始
+
+                    for li in li_items:
+                        li_text = li.get_text().strip()
+                        if not li_text:
+                            continue  # 跳过空的 <li>
+
+                        if not description_started:
+                            # 尝试解析字段
+                            for separator in SEPARATORS:
+                                if separator in li_text:
+                                    try:
+                                        key, value = li_text.split(separator, 1)
+                                        key = key.strip()
+                                        value = value.strip()
+                                        if key in key_experience:
+                                            new_experience[key_experience[key]] = value
+                                        break  # 匹配到分隔符后跳出循环
+                                    except Exception as e:
+                                        logging.error(f"解析工作经历失败：{li_text} - {str(e)}")
+                            else:
+                                # 如果没有匹配到字段，可能是描述部分的开始
+                                description_started = True
+                                new_experience["description"] = []
+
+                        if description_started:
+                            # 将后续的 <li> 添加到描述部分
+                            new_experience["description"].append(li_text)
+
+                    # 将解析到的工作经历添加到列表中
+                    if any(value is not None for value in new_experience.values()):
+                        data["work_experience"].append(new_experience)
+
+            # 移动到下一个节点
+            next_node = next_node.find_next_sibling()
 
     # 解析项目经历
     def parse_Project_experience(section, target_key):
-        """解析项目经历信息"""
-        Pro_items = section.find_all_next('h2')
-        for Pro in Pro_items:
-            try:
-                project_names = Pro.get_text().strip().split(' | ')
-                if len(project_names) < 2:
-                    raise ValueError("项目经历格式错误")
+        """
+    解析项目经验部分
 
-                project_name = project_names[0].strip()
-                team = project_names[1].strip()
+    :param soup: BeautifulSoup 对象，包含整个 HTML 文档
+    """
 
-                datalists_ul = Pro.find_next('ul')
-                datalis = []
-                if datalists_ul:
-                    for li in datalists_ul.find_next('ul'):
-                        stripped_text = li.get_text().strip()
-                        if stripped_text:
-                            datalis.append(stripped_text)
+    key_project = {
+        "项目名称": "project_name",
+        "项目描述": "project_description",
+        "技术栈": "tech_stack",
+        "角色": "role",
+        "开始时间": "start_date",
+        "结束时间": "end_date",
+        "成果": "results"
+    }
 
-                data[target_key].append({
-                    "project_name": project_name,
-                    "team": team,
-                    "achievement": datalis
-                })
-            except Exception as e:
-                logging.error(f"解析项目经历失败：{Pro.get_text()} - {str(e)}")
+    # 确保 data["project_experience"] 是一个列表
+    if "project_experience" not in data or not isinstance(data["project_experience"], list):
+        data["project_experience"] = []
+
+    # 清空初始值（覆盖初始值）
+    data["project_experience"].clear()
+
+    # 找到项目经验的起始点
+    project_experience_start = soup.find('h1', string="项目经历")
+    if not project_experience_start:
+        logging.error("未找到项目经验部分的起始点")
+        return
+
+    # 从起始点开始，找到所有 <h2> 标签，每个 <h2> 代表一个项目
+    next_node = project_experience_start.find_next_sibling()
+    while next_node and next_node.name != 'h1':
+        if next_node.name == 'h2':
+            new_project = {}  # 初始化一个空字典来存储当前项目的信息
+
+            # 找到 <h2> 标签之后的 <ul>
+            ul = next_node.find_next_sibling('ul')
+            if ul:
+                li_items = ul.find_all('li')
+                tech_stack_started = False  # 标记技术栈部分是否开始
+                results_started = False  # 标记成果部分是否开始
+
+                for li in li_items:
+                    li_text = li.get_text().strip()
+                    if not li_text:
+                        continue  # 跳过空的 <li>
+
+                    # 尝试解析字段键和字段值
+                    for separator in SEPARATORS:
+                        if separator in li_text:
+                            try:
+                                key, value = li_text.split(separator, 1)
+                                key = key.strip()
+                                value = value.strip()
+                                if key in key_project:
+                                    if key == "技术栈":
+                                        tech_stack_started = True
+                                        new_project[key_project[key]] = []
+                                    elif key == "成果":
+                                        results_started = True
+                                        new_project[key_project[key]] = []
+                                    else:
+                                        new_project[key_project[key]] = value
+                                    break  # 匹配到分隔符后跳出循环
+                            except Exception as e:
+                                logging.error(f"解析项目经验失败：{li_text} - {str(e)}")
+                            break  # 匹配到分隔符后跳出循环
+
+                    # 处理技术栈部分
+                    if tech_stack_started and not results_started:
+                        if separator not in li_text:
+                            new_project["tech_stack"].append(li_text)
+
+                    # 处理成果部分
+                    if results_started:
+                        if separator not in li_text:
+                            new_project["results"].append(li_text)
+
+                # 将解析到的项目经验添加到列表中
+                if any(value is not None for value in new_project.values()):
+                    data["project_experience"].append(new_project)
+
+        # 移动到下一个节点
+        next_node = next_node.find_next_sibling()
 
     # 解析自我评价
-    def parse_self_evaluation(section, target_key):
+    def parse_self_evaluation(soup):
         """
-        解析自我评价信息
+        解析自我评价部分
 
-        :param section: 自我评价部分的 HTML 节点
-        :param target_key: 目标 JSON 键
+        :param soup: BeautifulSoup 对象，包含整个 HTML 文档
         """
-        evaluation_item = section.find_next()
-        if evaluation_item:
-            data[target_key] = evaluation_item.get_text().strip()
+        key_evaluation = {
+            "职业目标": "career_objective",
+            "优势": "strengths",
+            "兴趣": "interests",
+            "描述": "description"
+        }
+        SEPARATORS = [': ', ':', '：']  # 定义可能的分隔符
+
+        # 确保 data["self_evaluation"] 是一个字典
+        if "self_evaluation" not in data or not isinstance(data["self_evaluation"], dict):
+            data["self_evaluation"] = {
+                "career_objective": None,
+                "strengths": [],
+                "description": []
+            }
+
+        # 清空初始值（覆盖初始值）
+        data["self_evaluation"]["career_objective"] = None
+        data["self_evaluation"]["strengths"] = []
+        data["self_evaluation"]["description"] = []
+
+        # 找到自我评价的起始点
+        self_evaluation_start = soup.find('h1', string="自我评价")
+        if not self_evaluation_start:
+            logging.error("未找到自我评价部分的起始点")
+            return
+
+        # 从起始点开始，找到后续的 <ul>
+        ul = self_evaluation_start.find_next_sibling('ul')
+        if ul:
+            li_items = ul.find_all('li')
+
+            for li in li_items:
+                li_text = li.get_text().strip()
+                if not li_text:
+                    continue  # 跳过空的 <li>
+
+                # 尝试解析字段键和字段值
+                for separator in SEPARATORS:
+                    if separator in li_text:
+                        try:
+                            key, value = li_text.split(separator, 1)
+                            key = key.strip()
+                            value = value.strip()
+                            if key in key_evaluation:
+                                if key == "优势":
+                                    # 提取优势列表
+                                    strengths = [item.strip() for item in value.split("\n")]
+                                    data["self_evaluation"]["strengths"].extend(strengths)
+                                elif key == "描述":
+                                    # 提取描述列表
+                                    descriptions = [item.strip() for item in value.split("\n")]
+                                    data["self_evaluation"]["description"].extend(descriptions)
+                                else:
+                                    data["self_evaluation"][key_evaluation[key]] = value
+                                break  # 匹配到分隔符后跳出循环
+                        except Exception as e:
+                            logging.error(f"解析自我评价失败：{li_text} - {str(e)}")
+                        break  # 匹配到分隔符后跳出循环
 
     # 调用解析函数
     parse_section('姓名', 'name', parse_name)
     parse_section('求职意向', 'job_intention', parse_job_intention)
     parse_section('个人信息', 'personal_info', parse_personal_info)
     parse_section('教育背景', 'education', parse_education)
-    parse_section('职业技能', 'skills', parse_list_items)
-    parse_section('证书', 'certificates', parse_list_items)
-    parse_section('技能证书', 'SC', parse_list_items)
+    parse_section('技能', 'skills', parse_skills)
+    parse_section('证书', 'certificates', parse_certificates)
+    # parse_section('技能证书', 'SC', parse_list_items)
     parse_section('工作经历', 'work_experience', parse_work_experience)
     parse_section('项目经历', 'Project_experience', parse_Project_experience)
     parse_section('自我评价', 'self_evaluation', parse_self_evaluation)
@@ -278,78 +485,29 @@ def parse_markdown_to_json(md_content):
     return data
 
 # def main():
+#     # 加载配置文件
+#     config = load_config('config.json')
+#     if not config:
+#         logging.error("配置文件加载失败，程序退出")
+#         return
 #
-#     md_content="""
-#    # 张三的简历
+#     # 从文件中读取 Markdown 内容
+#     md_file_path = os.path.join(os.path.dirname(__file__), '测试.md')
+#     md_content = read_markdown_file(md_file_path)
+#     if not md_content:
+#         logging.error("Markdown 文件加载失败，程序退出")
+#         return
 #
-# # 求职意向
-# 算法工程师
+#     # 解析 Markdown 内容
+#     data = parse_markdown_to_json(md_content, config)
 #
-# # 个人信息
-# - 性别：男
-# - 民族：汉族
-# - 年龄：28
-# - 联系方式：138-0013-8000
-# - 邮箱：zhangsan@email.com
+#     # 将解析后的数据以 JSON 格式输出
+#     json_output = json.dumps(data, ensure_ascii=False, indent=4)
+#     print(json_output)
 #
-#
-#
-# # 教育背景
-# ## 上海交通大学 | 计算机科学与技术硕士（2018.09 - 2021.06）
-# - GPA：3.8/4.0
-# - 主修课程：数据结构、机器学习、操作系统
-#
-# # 工作经历
-# ## 腾讯科技 | 算法工程师（实习）（2020.07 - 2020.12）
-# - **项目经验**：
-#   - 开发基于深度学习的用户行为分析系统，提升点击率15%
-#   - 使用Python/TensorFlow构建推荐模型，日均处理100万级数据
-# - **技术栈**：
-#   - Python、TensorFlow、PyTorch
-#   - SQL、MySQL、Redis
-#
-# ## 百度研究院 | 研究助理（2019.09 - 2019.12）
-# - **研究成果**：
-#   - 参与自然语言处理论文《BERT在少样本学习中的应用》撰写
-#   - 实现基于Transformer的文本摘要模型，ROUGE-LUKE得分提升8%
-#
-#
-# # 项目经历
-# ## 智能简历生成系统 | 个人项目
-# - **目标**：通过AI生成个性化简历
-# - **技术实现**：
-#   - 使用GPT-4 API解析用户输入
-#   - 基于HTML/CSS生成响应式简历模板
-#   - 集成GitHub/LinkedIn数据自动填充
-# - **成果**：开源项目地址 [https://github.com/zhangsan/resume-generator](https://github.com/zhangsan/resume-generator)
-#
-# ## 在线教育平台 | 团队项目
-# - **角色**：前端开发工程师
-# - **技术栈**：
-#   - React.js、Vue.js
-#   - Redux、Axios
-#   - WebSocket实时通信
-# - **亮点**：
-#   - 重构用户中心页面，首屏加载速度提升40%
-#   - 实现课程直播实时弹幕功能
-#
-# # 技能证书
-# - **编程语言**：Python（熟练）、Java（中级）、Go（了解）
-# - **证书**：
-#   - AWS Certified Solutions Architect
-#   - PADI Open Water Diver执照
-#
-# # 自我评价
-# - 5年算法研发经验，主导过3个百万级用户项目
-# - 擅长数据建模与机器学习算法优化
-# - 英语CET-6，可流利阅读技术文档
-#
-# # 其他信息
-# - GitHub：https://github.com/zhangsan
-# - 技术博客：https://zhangsan.tech"""
-#     data = parse_markdown_to_json(md_content)
-#     print(data,end=" \n")
-#
+#     # 可选：将 JSON 数据保存到文件
+#     with open('output.json', 'w', encoding='utf-8') as json_file:
+#         json_file.write(json_output)
 #
 # if __name__ == "__main__":
 #     main()
