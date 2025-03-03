@@ -1,0 +1,73 @@
+{
+  "name": null,
+  "job_intention": null,
+  "personal_info": {
+    "gender": null,
+    "ethnicity": null,
+    "age": null,
+    "contact": null,
+    "e_mail": null,
+    "face": null,
+    "nationality": null,
+    "location": null,
+    "linkedin": null,
+    "github": null,
+    "personal_website": null
+  },
+  "education": {
+    "degree": null,
+    "school": null,
+    "major": null,
+    "start_date": null,
+    "end_date": null,
+    "gpa": null,
+    "courses": null
+  },
+  "skills": {
+    "programming_languages": null,
+    "tools": null,
+    "frameworks": null,
+    "databases": null,
+    "software": null,
+    "languages": null
+  },
+  "certificates": [
+    {
+      "certificate_name": null,
+      "issuing_authority": null,
+      "obtained_date": null
+    }
+  ],
+  "work_experience": [
+    {
+      "company_name": null,
+      "position": null,
+      "start_date": null,
+      "end_date": null,
+      "description": null,
+      "achievements": [],
+      "content": null
+    }
+  ],
+  "project_experience": [
+    {
+      "project_name": null,
+      "project_description": null,
+      "tech_stack": [],
+      "role": null,
+      "start_date": null,
+      "end_date": null,
+      "results": []
+    }
+  ],
+  "self_evaluation": {
+    "career_objective": null,
+    "strengths": [],
+    "interests": [],
+    "description": []
+  },
+  "honors": [],
+  "extracurricular_activities": [],
+  "volunteer_experience": [],
+  "hobbies": []
+}
