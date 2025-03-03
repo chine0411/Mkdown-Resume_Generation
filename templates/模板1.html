@@ -1,95 +1,141 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../static/css/模板1.css" rel="stylesheet">
-  <title>简历示例</title>
+  <title>简历</title>
 </head>
 <body>
 <div class="container">
     <!-- 左边信息 -->
     <div class="left-section">
         <div class="profile-pic">
-            <img alt="找不到图片" src="../封面.jpg">
+            <img alt="个人照片" src="{{ personal_info.face or '../封面.jpg' }}">
         </div>
         <h1>{{ name or "匿名" }}</h1>
 
         {% if job_intention %}
-        <p class="job-title">{{job_intention}}</p>
+        <p class="job-title">{{ job_intention }}</p>
         {% endif %}
+
         <h2>基本信息</h2>
         {% if personal_info.age %}
-        <p>年龄：{{ personal_info.age }}</p>
+        <p><strong>年龄</strong>：{{ personal_info.age }}</p>
         {% endif %}
         {% if personal_info.gender %}
-        <p>性别：{{ personal_info.gender }}</p>
+        <p><strong>性别</strong>：{{ personal_info.gender }}</p>
         {% endif %}
         {% if personal_info.ethnicity %}
-        <p>民族：{{ personal_info.ethnicity }}</p>
+        <p><strong>民族</strong>：{{ personal_info.ethnicity }}</p>
         {% endif %}
         {% if personal_info.contact %}
-        <p>电话：{{ personal_info.contact }}</p>
+        <p><strong>电话</strong>：{{ personal_info.contact }}</p>
         {% endif %}
         {% if personal_info.e_mail %}
-        <p>邮箱：{{personal_info.e_mail}}</p>
+        <p><strong>邮箱</strong>：{{ personal_info.e_mail }}</p>
+        {% endif %}
+        {% if personal_info.linkedin %}
+        <p><strong>LinkedIn</strong>：<a href="{{ personal_info.linkedin }}">{{ personal_info.linkedin }}</a></p>
+        {% endif %}
+        {% if personal_info.github %}
+        <p><strong>GitHub</strong>：<a href="{{ personal_info.github }}">{{ personal_info.github }}</a></p>
+        {% endif %}
+        {% if personal_info.personal_website %}
+        <p><strong>个人网站</strong>：<a href="{{ personal_info.personal_website }}">{{ personal_info.personal_website }}</a></p>
         {% endif %}
 
         {% if education %}
         <h2>教育背景</h2>
-        {% for education in education %}
-        <P>{{ education.degree }} —— {{ education.school }}({{ education.start_date}}) {{ education.end_date }}</P>
-        <br>{{education.major}}</br>
-        {% endfor %}
+        <p>{{ education.school }} | {{ education.major }} 预计毕业时间：{{ education.end_date }}</p>
+        {% if education.gpa %}
+        <p><strong>GPA</strong>：{{ education.gpa }}</p>
+        {% endif %}
+        {% if education.courses %}
+        <p><strong>主要课程</strong>：{{ education.courses }}</p>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="right-section">
+        {% if skills.programming_languages or skills.tools or skills.frameworks or skills.databases or skills.software or skills.languages %}
+        <h2>职业技能</h2>
+        {% if skills.programming_languages %}
+        <p><strong>编程语言：</strong>{{ skills.programming_languages }}</p>
+        {% endif %}
+        {% if skills.tools %}
+        <p><strong>工具：</strong>{{ skills.tools }}</p>
+        {% endif %}
+        {% if skills.frameworks %}
+        <p><strong>框架：</strong>{{ skills.frameworks }}</p>
+        {% endif %}
+        {% if skills.databases %}
+        <p><strong>数据库：</strong>{{ skills.databases  }}</p>
+        {% endif %}
+        {% if skills.software %}
+        <p><strong>软件：</strong>{{ skills.software }}</p>
+        {% endif %}
+        {% if skills.languages %}
+        <p><strong>语言：</strong>{{ skills.languages }}</p>
+        {% endif %}
         {% endif %}
 
-    </div>
-    <div class="right-section">
-        {% if skills %}
-        <h2>职业技能</h2>
-        {% for skill in skills %}
-        <li class="li">{{ skill }}</li>
-        {% endfor %}
-        {% endif %}
         {% if certificates %}
         <h2>证书</h2>
-        {% for certificates in certificates %}
-        <li class="li">{{ certificates}}</li>
-        {% endfor %}
-        {% endif %}
-        {% if SC %}
-        <h2>技能证书</h2>
-        {% for SC in SC %}
-        <li class="li">{{ SC}}</li>
-        {% endfor %}
+        <ul>
+            {% for certificate in certificates %}
+            <p>{{ certificate.certificate_name }}</p>
+            {% endfor %}
+        </ul>
         {% endif %}
 
-
-        <h2>工作经历</h2>
         {% if work_experience %}
+        <h2>工作经历</h2>
         {% for experience in work_experience %}
-        <h3> {{ experience.company }} | {{ experience.position }} ({{ experience.dates }})</h3>
-        {% for detail in experience.details %}
-        <li>{{ detail }}</li>
-        {% endfor %}
-        {% endfor %}
+        <h3>{{ experience.company_name }} | {{ experience.position }} ({{ experience.start_date }} - {{ experience.end_date }})</h3>
+        {% if experience.description %}
+            <b><strong>工作内容：</strong></b>
+            {% for description in experience.description %}
+                <p>{{ description }}</p>
+            {% endfor %}
         {% endif %}
-
-        {% if Project_experience %}
-        <h2>项目经历</h2>
-        {% for experience in Project_experience %}
-        <h3>{{experience.project_name}} | {{experience.team}}</h3>
-        {% for achievement in experience.achievement %}
+        {% if experience.achievements %}
+        <ul>
+        {% for achievement in experience.achievements %}
         <li>{{ achievement }}</li>
         {% endfor %}
+        </ul>
+        {% endif %}
         {% endfor %}
         {% endif %}
 
-        <h2>自我评价</h2>
-        <p class="p">{{self_evaluation}}</p>
-    </div>
-  </div>
-</body>
+        {% if project_experience %}
+        <h2>项目经历</h2>
+        {% for project in project_experience %}
+        <h3>{{ project.project_name }}{% if project.start_date and project.end_date %} （{{ project.start_date }} - {{ project.end_date }}）{% endif %}</h3>
+        {% if project.project_description %}
+        <p><strong>项目描述</strong>{{ project.project_description }}</p>
+        {% endif %}
+        {% if project.tech_stack %}
+        <p><strong>技术栈：</strong></p>
+            <p>{{ project.tech_stack | join('<br>') }}</p>
+        {% endif %}
+        {% if project.results %}
+        <p>
+        <p><strong>成果：</strong></p>
+            {% for result in project.results %}
+            <a>{{ result }}</a>
+            {% endfor %}
+        </p>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
 
+        {% if self_evaluation.description %}
+        <h2>自我评价</h2>
+        <p>{{ self_evaluation.description | join('<br>') }}</p>
+        {% endif %}
+    </div>
+</div>
+</body>
 </html>

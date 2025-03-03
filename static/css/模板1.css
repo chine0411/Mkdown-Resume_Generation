@@ -102,6 +102,12 @@ li {
     text-indent: 2em; /* 首行缩进2个字符宽度 */
 }
 
+a {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal; /* 确保内容可以正常换行 */
+}
+
 .p {
     text-indent: 2em; /* 首行缩进2个字符宽度 */
  }
