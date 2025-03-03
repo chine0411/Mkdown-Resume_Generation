@@ -4,66 +4,95 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport">
     <link href="../static/css/模板2.css" rel="stylesheet">
-    <title>运维工程师简历</title>
+    <title>{{ job_intention or "简历" }}</title>
 </head>
 <body>
 <div class="container">
-    <h1>张三</h1>
-    <p>新疆工程学院 | 通信工程在读 | 预计毕业：2026年6月</p>
-    <p>📧 zhangsan@email.com | 📱 (+86) 138-0000-0000</p>
+    <!-- 照片区域 -->
+    {% if personal_info.photo %}
+    <div class="profile-pic">
+            <img alt="个人照片" src="{{ personal_info.face or '../封面.jpg' }}">
+    </div>
+    {% endif %}
 
+    <h1>{{ name or "匿名" }}</h1>
+    {% if education.school %}
+    <p>{{ education.school }} | {{ education.major }} | 预计毕业：{{ education.end_date }}</p>
+    {% endif %}
+    {% if personal_info.e_mail and personal_info.contact %}
+    <p>📧 {{ personal_info.e_mail }} | 📱 {{ personal_info.contact }}</p>
+    {% endif %}
+
+    {% if education.school %}
     <h2>教育背景</h2>
-    <p><strong>新疆工程学院 通信工程专业 | 在读</strong></p>
-    <p>GPA：3.5/4.0 | 预计毕业时间：2026年6月</p>
-
-    <div class="skill-item">
+    <p><strong>{{ education.school }} {{ education.major }} | {{ education.degree }}</strong></p>
+    <p>GPA：{{ education.gpa }} | 预计毕业时间：{{ education.end_date }}</p>
+    {% if education.courses %}
         <div>核心课程：</div>
-        <div>Linux操作系统、计算机网络原理、数据库原理、路由交换技术</div>
-    </div>
+        <div>{{ education.courses }}</div>
+    {% endif %}
+    {% endif %}
 
+    {% if skills.programming_languages or skills.tools %}
     <h2>技能清单</h2>
+        <div><strong>技术栈</strong>：</div>
+        <div>{{ skills.programming_languages }} | {{ skills.tools }}</div>
+    {% if skills.frameworks or skills.databases %}
     <div class="skill-item">
-        <div>技术栈：</div>
-        <div>✅ Linux系统管理（CentOS/Ubuntu） | ⚙️ Web服务器部署（Nginx/Apache） | 🔧 Python自动化脚本</div>
+        <div><strong>学习中</strong>：</div>
+        <div>{{ skills.frameworks }} | {{ skills.databases }}</div>
     </div>
-    <div class="skill-item">
-        <div>学习中：</div>
-        <div>Kubernetes容器编排 | Terraform基础设施即代码</div>
-    </div>
+    {% endif %}
+    {% endif %}
 
+    {% if work_experience %}
     <h2>实践经历</h2>
+    {% for experience in work_experience %}
     <div class="experience">
-        <h3>校园实验室技术支持志愿者</h3>
-        <p>- 协助维护教学机房40台设备（Windows/Linux系统）</p>
-        <p>- 使用Ansible脚本批量安装软件环境（Python+YAML）</p>
+        <h3>{{ experience.position }} @ {{ experience.company_name }}</h3>
+        <p>{{ experience.start_date }} - {{ experience.end_date }}</p>
+        {% for desc in experience.description %}
+        <p>- {{ desc }}</p>
+        {% endfor %}
     </div>
-    <div class="experience">
-        <h3>课程设计《智能家居物联网平台》</h3>
-        <p>- 基于树莓派搭建家庭自动化系统（传感器数据采集+MQTT通信）</p>
-    </div>
+    {% endfor %}
+    {% endif %}
 
+    {% if project_experience %}
     <h2>项目经历</h2>
+    {% for project in project_experience %}
     <div class="project">
-        <h3>个人技术博客系统搭建</h3>
-        <p>技术栈：Flask框架 + Ubuntu+Nginx + Gunicorn部署</p>
+        <h3>{{ project.project_name }}</h3>
+        <p><strong>技术栈</strong>：{{ project.tech_stack | join(" | ") }}</p>
+        {% for result in project.results %}
+        <p>- {{ result }}</p>
+        {% endfor %}
     </div>
+    {% endfor %}
+    {% endif %}
 
-    <div class="project">
-        <h3>网络拓扑优化实验</h3>
-        <p>Cisco IOS配置 + HSRP/VRRP冗余方案设计</p>
-    </div>
-
-
+    {% if certificates %}
     <h2>技术认证</h2>
-    <p>✅ CompTIA Network+ 认证（备考中） | ✅ Linux Essentials 认证（已获）</p>
+    <p>
+        {% for cert in certificates %}
+        ✅ {{ cert.certificate_name }}（{{ cert.issuing_authority }}）{% if not loop.last %} | {% endif %}
+        {% endfor %}
+    </p>
+    {% endif %}
 
+    {% if self_evaluation.description or self_evaluation.strengths %}
     <h2>自我评价</h2>
-    <p>作为通信工程专业学生，我始终保持着对运维技术的强烈兴趣：</p>
+    {% if self_evaluation.description %}
+    <p>{{ self_evaluation.description | join("；") }}</p>
+    {% endif %}
+    {% if self_evaluation.strengths %}
     <ul>
-        <li>通过MOOC平台系统学习AIOps、云原生技术</li>
-        <li>坚持在GitHub发布技术实验项目（累计Star 50+）</li>
-        <li>在实验室维护小组中担任技术文档编写负责人</li>
+        {% for strength in self_evaluation.strengths %}
+        <li>{{ strength }}</li>
+        {% endfor %}
     </ul>
+    {% endif %}
+    {% endif %}
 </div>
 </body>
 </html>

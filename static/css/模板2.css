@@ -45,15 +45,21 @@ h2 {
     margin-top: 5mm; /* 段落间垂直间距（控制信息密度） */
     /* 二级标题样式（如"教育背景"） */
 }
-
-.skill-item {
-    display: flex; /* 弹性布局实现分栏效果（关键信息分组） */
-    justify-content: space-between; /* 左右元素间距分配（平衡视觉重量） */
-    margin-bottom: 8mm; /* 技能项间垂直间距缩减（提高信息密度） */
-    padding: 5mm; /* 内边距缓冲（提升可点击区域） */
-    background-color: #f1f1f1; /* 浅灰色背景区分技能项（降低视觉疲劳） */
-    border-radius: 3mm; /* 圆角边框（现代设计特征） */
-    /* 技能清单项的统一样式 */
+.profile-pic {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中（可选） */
+}
+/* 头像样式 */
+.profile-pic img {
+   width: 160px;
+   height: 160px;
+   object-fit: cover;  /* 保持图片比例并覆盖整个容器 */
+   border-radius: 70%;  /* 将图片转为圆形 */
+   margin-bottom: 15px;  /* 添加间距 */
+   border: 4px solid rgba(255, 255, 255, 0.8);  /* 添加半透明白色边框 */
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* 添加微妙阴影效果 */
+   margin-bottom: 15px;
 }
 
 /* 打印媒体查询优化（保留原始背景） */
