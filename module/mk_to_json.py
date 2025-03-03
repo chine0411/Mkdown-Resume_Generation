@@ -6,44 +6,50 @@ import re
 import os
 
 # 配置日志记录
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # 分隔符配置
 SEPARATORS = ['：']
 
 
-def load_config(file_path):
+def load_config(file_name="config.json"):
     """
     加载配置文件（JSON 格式）
 
-    :param file_path: 配置文件路径
+    :param file_name: 配置文件名，默认为 config.json
     :return: 解析后的 JSON 数据
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        # 获取当前脚本所在的目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_dir, file_name)
+        with open(config_path, 'r', encoding='utf-8') as file:
             return json.load(file)
+    except FileNotFoundError:
+        logging.error(f"配置文件未找到：{config_path}")
+        return None
     except Exception as e:
         logging.error(f"加载配置文件失败：{str(e)}")
         return None
 
 
-def read_markdown_file(file_path):
-    """
-    从文件中读取 Markdown 内容
-
-    :param file_path: Markdown 文件路径
-    :return: Markdown 内容字符串
-    """
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            return file.read()
-    except FileNotFoundError:
-        logging.error(f"文件未找到：{file_path}")
-        return None
-    except Exception as e:
-        logging.error(f"读取 Markdown 文件失败：{str(e)}")
-        return None
-
+# def read_markdown_file(file_path):
+#     """
+#     从文件中读取 Markdown 内容
+#
+#     :param file_path: Markdown 文件路径
+#     :return: Markdown 内容字符串
+#     """
+#     try:
+#         with open(file_path, 'r', encoding='utf-8') as file:
+#             return file.read()
+#     except FileNotFoundError:
+#         logging.error(f"文件未找到：{file_path}")
+#         return None
+#     except Exception as e:
+#         logging.error(f"读取 Markdown 文件失败：{str(e)}")
+#         return None
+#
 
 def parse_markdown_to_json(md_content, config):
     """
@@ -55,7 +61,6 @@ def parse_markdown_to_json(md_content, config):
     """
     # 将 Markdown 转换为 HTML
     html = markdown.markdown(md_content)
-    print(html)
     soup = BeautifulSoup(html, 'html.parser')
 
     # 初始化 JSON 数据结构，使用 config 作为模板
@@ -70,6 +75,7 @@ def parse_markdown_to_json(md_content, config):
         :param target_key: 目标 JSON 键
         :param parser_func: 解析函数
         """
+        logging.info(f'解析标题下内容:{header_text}')
         section = soup.find('h1', string=header_text)
         if section:
             parser_func(section, target_key)
@@ -264,7 +270,6 @@ def parse_markdown_to_json(md_content, config):
         data["work_experience"].clear()
 
         work_experience_start = soup.find('h1', string="工作经历")
-        print(f'节点{work_experience_start}')
         if not work_experience_start:
             logging.error("未找到工作经历部分的起始点")
             return
@@ -403,72 +408,74 @@ def parse_markdown_to_json(md_content, config):
         # 移动到下一个节点
         next_node = next_node.find_next_sibling()
 
-    # 解析自我评价
-    def parse_self_evaluation(soup):
-        """
-        解析自我评价部分
+        # 解析自我评价
+        # 解析自我评价
+        def parse_self_evaluation(section, target_key):
+            """
+            解析自我评价部分
 
-        :param soup: BeautifulSoup 对象，包含整个 HTML 文档
-        """
-        key_evaluation = {
-            "职业目标": "career_objective",
-            "优势": "strengths",
-            "兴趣": "interests",
-            "描述": "description"
-        }
-        SEPARATORS = [': ', ':', '：']  # 定义可能的分隔符
-
-        # 确保 data["self_evaluation"] 是一个字典
-        if "self_evaluation" not in data or not isinstance(data["self_evaluation"], dict):
-            data["self_evaluation"] = {
-                "career_objective": None,
-                "strengths": [],
-                "description": []
+            :param section: 自我评价部分的 HTML 节点
+            :param target_key: 目标 JSON 键
+            """
+            key_evaluation = {
+                "职业目标": "career_objective",
+                "优势": "strengths",
+                "兴趣": "interests",
+                "描述": "description"
             }
+            SEPARATORS = [': ', ':', '：']  # 定义可能的分隔符
 
-        # 清空初始值（覆盖初始值）
-        data["self_evaluation"]["career_objective"] = None
-        data["self_evaluation"]["strengths"] = []
-        data["self_evaluation"]["description"] = []
+            # 确保 data["self_evaluation"] 是一个字典
+            if "self_evaluation" not in data or not isinstance(data["self_evaluation"], dict):
+                data["self_evaluation"] = {
+                    "career_objective": None,
+                    "strengths": [],
+                    "description": []
+                }
 
-        # 找到自我评价的起始点
-        self_evaluation_start = soup.find('h1', string="自我评价")
-        if not self_evaluation_start:
-            logging.error("未找到自我评价部分的起始点")
-            return
+            # 清空初始值（覆盖初始值）
+            data["self_evaluation"]["career_objective"] = None
+            data["self_evaluation"]["strengths"] = []
+            data["self_evaluation"]["description"] = []
 
-        # 从起始点开始，找到后续的 <ul>
-        ul = self_evaluation_start.find_next_sibling('ul')
-        if ul:
-            li_items = ul.find_all('li')
+            # 找到自我评价的起始点
+            self_evaluation_start = soup.find('h1', string="自我评价")
+            if not self_evaluation_start:
+                logging.error("未找到自我评价部分的起始点")
+                return
 
-            for li in li_items:
-                li_text = li.get_text().strip()
-                if not li_text:
-                    continue  # 跳过空的 <li>
+            # 从起始点开始，找到后续的 <ul>
+            ul = self_evaluation_start.find_next_sibling('ul')
+            if ul:
+                li_items = ul.find_all('li')
 
-                # 尝试解析字段键和字段值
-                for separator in SEPARATORS:
-                    if separator in li_text:
-                        try:
-                            key, value = li_text.split(separator, 1)
-                            key = key.strip()
-                            value = value.strip()
-                            if key in key_evaluation:
-                                if key == "优势":
-                                    # 提取优势列表
-                                    strengths = [item.strip() for item in value.split("\n")]
-                                    data["self_evaluation"]["strengths"].extend(strengths)
-                                elif key == "描述":
-                                    # 提取描述列表
-                                    descriptions = [item.strip() for item in value.split("\n")]
-                                    data["self_evaluation"]["description"].extend(descriptions)
-                                else:
-                                    data["self_evaluation"][key_evaluation[key]] = value
-                                break  # 匹配到分隔符后跳出循环
-                        except Exception as e:
-                            logging.error(f"解析自我评价失败：{li_text} - {str(e)}")
-                        break  # 匹配到分隔符后跳出循环
+                for li in li_items:
+                    li_text = li.get_text().strip()
+                    if not li_text:
+                        continue  # 跳过空的 <li>
+
+                    # 尝试解析字段键和字段值
+                    for separator in SEPARATORS:
+                        if separator in li_text:
+                            try:
+                                key, value = li_text.split(separator, 1)
+                                key = key.strip()
+                                value = value.strip()
+                                if key in key_evaluation:
+                                    if key == "优势":
+                                        # 提取优势列表
+                                        strengths = [item.strip() for item in value.split("\n")]
+                                        data["self_evaluation"]["strengths"].extend(strengths)
+                                    elif key == "描述":
+                                        # 提取描述列表
+                                        descriptions = [item.strip() for item in value.split("\n")]
+                                        data["self_evaluation"]["description"].extend(descriptions)
+                                    else:
+                                        data["self_evaluation"][key_evaluation[key]] = value
+                                    break  # 匹配到分隔符后跳出循环
+                            except Exception as e:
+                                logging.error(f"解析自我评价失败：{li_text} - {str(e)}")
+                            break  # 匹配到分隔符后跳出循环
 
     # 调用解析函数
     parse_section('姓名', 'name', parse_name)
@@ -484,14 +491,32 @@ def parse_markdown_to_json(md_content, config):
 
     return data
 
+
+def parse_markdown_file_to_json(md_file_path):
+    """
+    解析 Markdown 文件并返回 JSON 数据
+
+    :param md_file_path: Markdown 文件路径
+    :return: 解析后的 JSON 数据
+    """
+    # 加载配置文件
+    config = load_config()
+    if not config:
+        logging.error("配置文件加载失败，无法继续解析")
+        return None
+
+    # # 读取 Markdown 文件内容
+    # md_content = read_markdown_file(md_file_path)
+    # print(md_content)
+    # if not md_content:
+    #     logging.error("Markdown 文件加载失败，无法继续解析")
+    #     return None
+
+    # 调用解析函数，传入 Markdown 内容和配置数据
+    return parse_markdown_to_json(md_file_path, config)
+
 # def main():
-#     # 加载配置文件
-#     config = load_config('config.json')
-#     if not config:
-#         logging.error("配置文件加载失败，程序退出")
-#         return
-#
-#     # 从文件中读取 Markdown 内容
+#      # 从文件中读取 Markdown 内容
 #     md_file_path = os.path.join(os.path.dirname(__file__), '测试.md')
 #     md_content = read_markdown_file(md_file_path)
 #     if not md_content:
@@ -499,7 +524,7 @@ def parse_markdown_to_json(md_content, config):
 #         return
 #
 #     # 解析 Markdown 内容
-#     data = parse_markdown_to_json(md_content, config)
+#     data = parse_markdown_file_to_json(md_file_path)
 #
 #     # 将解析后的数据以 JSON 格式输出
 #     json_output = json.dumps(data, ensure_ascii=False, indent=4)
