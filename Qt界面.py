@@ -8,6 +8,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QDesktopServices
 from PyQt5 import QtWidgets, QtCore, QtGui, QtWebEngineWidgets
 from static.UI.mkgui import Ui_Form
+from static.UI.AboutUi import AboutWindow
 from module.mk_to_json import parse_markdown_file_to_json
 from threading import Thread
 
@@ -21,6 +22,7 @@ class LogHandler(logging.Handler):
     def emit(self, record):
         msg = self.format(record)
         self.signal.emit(msg)  # 通过信号将日志发送到主线程
+
 
 
 class MyAppWindow(QWidget):
@@ -47,6 +49,7 @@ class MyAppWindow(QWidget):
         self.ui.Button_op.clicked.connect(self.opne_file)
         self.ui.Button_see.clicked.connect(self.preview_html_file)
         self.ui.Button_dow.clicked.connect(self.print_html_to_pdf)
+
 
     # 加载外部qss样式文件
     def load_style(self, filename):
@@ -116,6 +119,12 @@ class MyAppWindow(QWidget):
             QMessageBox.warning(self, "错误", "未选择保存路径")
             logging.warning("用户未选择保存路径")
             return
+        # 检查文件名是否重复，并自动处理
+        base_path, extension = os.path.splitext(save_path)
+        counter = 1
+        while os.path.exists(save_path):
+            save_path = f"{base_path} ({counter}){extension}"
+            counter += 1
 
         # 启动线程处理文件
         thread = Thread(target=self._process, args=(self.input_path, self.template_path, save_path))
@@ -220,6 +229,7 @@ class MyAppWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MyAppWindow()
-    window.show()
+    main_window = MyAppWindow()  # 创建主窗口实例
+    about_window = AboutWindow(main_window)  # 创建关于窗口实例
+    about_window.show()  # 首先显示关于窗口
     sys.exit(app.exec_())
