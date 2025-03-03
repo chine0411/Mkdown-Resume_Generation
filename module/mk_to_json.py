@@ -492,7 +492,7 @@ def parse_markdown_to_json(md_content, config):
     return data
 
 
-def parse_markdown_file_to_json(md_file_path):
+def parse_markdown_file_to_json(md_file_path, save_to_file=False, output_file_name="output.json"):
     """
     解析 Markdown 文件并返回 JSON 数据
 
@@ -505,15 +505,33 @@ def parse_markdown_file_to_json(md_file_path):
         logging.error("配置文件加载失败，无法继续解析")
         return None
 
-    # # 读取 Markdown 文件内容
-    # md_content = read_markdown_file(md_file_path)
-    # print(md_content)
-    # if not md_content:
-    #     logging.error("Markdown 文件加载失败，无法继续解析")
-    #     return None
-
     # 调用解析函数，传入 Markdown 内容和配置数据
-    return parse_markdown_to_json(md_file_path, config)
+    json_data = parse_markdown_to_json(md_file_path, config)
+
+    # 如果需要保存到文件，则调用保存函数
+    if save_to_file and json_data:
+        save_json_to_file(json_data, output_file_name)
+
+    return json_data
+
+def save_json_to_file(data, file_name="output.json"):
+    """
+    将 JSON 数据保存到文件中
+
+    :param data: JSON 数据
+    :param file_name: 输出文件名，默认为 output.json
+    """
+    try:
+        # 获取当前脚本所在的目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(current_dir, file_name)
+
+        # 将 JSON 数据写入文件
+        with open(output_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+        logging.info(f"JSON 数据已成功保存到文件：{output_path}")
+    except Exception as e:
+        logging.error(f"保存 JSON 数据到文件失败：{str(e)}")
 
 # def main():
 #      # 从文件中读取 Markdown 内容
