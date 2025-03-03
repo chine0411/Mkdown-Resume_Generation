@@ -8,7 +8,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QDesktopServices
 from PyQt5 import QtWidgets, QtCore, QtGui, QtWebEngineWidgets
 from static.UI.mkgui import Ui_Form
-from module.mk_p import parse_markdown_to_json
+from module.mk_to_json import parse_markdown_file_to_json
 from threading import Thread
 
 
@@ -127,7 +127,7 @@ class MyAppWindow(QWidget):
             # 解析 Markdown 文件
             with open(input_path, 'r', encoding='utf-8') as file:
                 markdown_content = file.read()
-            resume_data = parse_markdown_to_json(markdown_content)
+            resume_data = parse_markdown_file_to_json(markdown_content)
 
             # 数据完整性验证
             required_fields = ['name', 'job_intention', 'personal_info', 'education', 'skills', 'certificates']
