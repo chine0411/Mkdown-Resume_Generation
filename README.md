@@ -75,7 +75,32 @@ self.process_button.config(state=tk.DISABLED)
 ```
 
 ## 六、使用指南
-1. **运行环境要求**：Python版本需在3.9及以上，依赖包包括`jinja2`和`PyQt5`，可通过`pip install jinja2 PyQt5`进行安装。
+1. **运行环境要求**：
+
+**Python**：3.9 ~ 3.10
+依赖库
+```python
+beautifulsoup4==4.13.3
+bs4==0.0.2
+click==8.1.8
+colorama==0.4.6
+Jinja2==3.1.5
+Markdown==3.7
+MarkupSafe==3.0.2
+PyQt5==5.15.9
+pyqt5-plugins==5.15.9.2.3
+PyQt5-Qt5==5.15.2
+pyqt5-tools==5.15.9.3.3
+PyQt5_sip==12.17.0
+PyQtWebEngine==5.15.7
+PyQtWebEngine-Qt5==5.15.2
+python-dotenv==1.0.1
+qt5-applications==5.15.2.2.3
+qt5-tools==5.15.2.1.3
+soupsieve==2.6
+typing_extensions==4.12.2
+```
+
 2. **目录结构**：
 ```tree
 E:.
@@ -109,13 +134,20 @@ E --> F[完成生成]
     - **修改路径**：可在`./templates`目录下的HTML文件中进行修改。
     - **变量替换示例**：在HTML模板中，可使用Jinja2语法进行变量替换，如`<h1>{{ resume.name }}</h1>`、`<div class="job-title">{{ resume.job_intention }}</div>`。
 
-## 七、项目价值说明
+## 七、部署步骤
+1. 下载并解压，打开解压文件夹，输入`cmd`（注意：解压路劲不能有中文）
+2. 创建：虚拟环境 `print -m venv venv`
+3. 激活虚拟环境 `venv\Scripts\activate`回车，带有`(venv) D:\Mkdown-Resume_Generation>`表示进入虚拟环境
+4. 下载依赖`python -m pip install -r re.txt`(re.txt是依赖列表，等待下载完成)
+5. 运行程序`python Qt界面.py`即可运行
+
+## 八、项目价值说明
 1. **效率提升**：相较于手动转换简历格式，本工具能够节省约70%的时间成本，大幅提高简历制作效率。
 2. **高度可定制**：用户可根据自身需求和喜好，自由选择或开发HTML模板，实现个性化的简历设计。
 3. **技术实践**：项目综合运用多线程、日志系统、Jinja2以及PyQt5等核心技术，为开发者提供了良好的技术实践平台，有助于提升技术能力。
 4. **适用场景**：主要适用于技术岗求职者，帮助他们快速生成专业且符合要求的简历，增强求职竞争力。
 
-## 八、版本特点
+## 九、版本特点
 1. **完整保留技术细节**：项目文档详细记录了技术架构、关键代码片段以及Qt5界面的实现细节，便于开发者进行二次开发和维护。
 2. **使用标准Markdown语法结构**：采用标准Markdown语法编写简历文件，易于学习和使用，且与其他Markdown编辑器具有良好的兼容性。
 3. **包含交互式图表（Mermaid）**：使用Mermaid语法绘制流程图，直观展示项目的业务逻辑和操作流程，提升文档的可读性和可理解性。 
