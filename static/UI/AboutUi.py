@@ -49,7 +49,7 @@ class AboutWindow(QWidget):
         <html>
         <body style="font-family: 'Microsoft YaHei', sans-serif; font-size: 14px; color: #333; text-align: left; padding: 20px;">
             <h3 style="color: #4CAF50; font-size: 18px; text-align: center;">Markdown 简历生成器</h3>
-            <p><strong>开发者：</strong><a href="https://github.com/chine0411" style="color: #007BFF; text-decoration: none;">姜秋郁</a></p>
+            <p><strong>开发者：</strong><a href="https://space.bilibili.com/673605760?spm_id_from=333.1007.0.0" style="color: #007BFF; text-decoration: none;">姜秋郁</a></p>
             <p><strong>开源地址：</strong>
             <a href="https://github.com/chine0411/Mkdown-Resume_Generation" style="color: #007BFF; text-decoration: none;">Github</a></p>
             <a href="https://gitee.com/yuxin_wurenhui/Mkdown-Resume_Generation" style="color: #007BFF; text-decoration: none;">Gitee</a></p>
